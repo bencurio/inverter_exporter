@@ -1,0 +1,821 @@
+homeassistant:
+# region QMOD
+  - type: binary_sensor
+    key: PowerOnMode
+    config:
+      UniqueID: "inverter_mode_power_on"
+      Name: "Inverter Power On Mode"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_mode_power_on/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_mode_power_on/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StandbyMode
+    config:
+      UniqueID: "inverter_mode_standby"
+      Name: "Inverter Standby Mode"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_mode_standby/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_mode_standby/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: LineMode
+    config:
+      UniqueID: "inverter_mode_line_mode"
+      Name: "Inverter Line Mode"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_mode_line_mode/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_mode_line_mode/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BatteryMode
+    config:
+      UniqueID: "inverter_mode_battery"
+      Name: "Inverter Battery Mode"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_mode_battery/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_mode_battery/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: FaultMode
+    config:
+      UniqueID: "inverter_mode_fault"
+      Name: "Inverter Fault Mode"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_mode_fault/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_mode_fault/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: PowerSavingMode
+    config:
+      UniqueID: "inverter_mode_power_saving"
+      Name: "Inverter Power Saving Mode"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_mode_power_saving/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_mode_power_saving/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+# endregion
+# region QPIGS
+  - type: sensor
+    key: GridVoltage
+    config:
+      UniqueID: inverter_grid_voltage
+      DeviceClass: "voltage"
+      Name: "Inverer Grid Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_grid_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_grid_voltage/state"
+  - type: sensor
+    key: GridFrequency
+    config:
+      UniqueID: "inverter_grid_frequency"
+      Name: "Inverter Grid Frequency"
+      UnitOfMeasurement: "Hz"
+      ConfigTopic: "homeassistant/sensor/inverter_grid_frequency/config"
+      StateTopic: "homeassistant/sensor/inverter_grid_frequency/state"
+  - type: sensor
+    key: ACOutputVoltage
+    config:
+      UniqueID: "inverter_ac_output_voltage"
+      DeviceClass: "voltage"
+      Name: "Inverter AC Output Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_voltage/state"
+  - type: sensor
+    key: ACOutputFrequency
+    config:
+      UniqueID: "inverter_ac_output_frequency"
+      Name: "Inverter AC Output Frequency"
+      UnitOfMeasurement: "Hz"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_frequency/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_frequency/state"
+  - type: sensor
+    key: ACOutputApparentPower
+    config:
+      UniqueID: "inverter_ac_output_apparent_power"
+      Name: "Inverter AC output apparent power"
+      UnitOfMeasurement: "VA"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_apparent_power/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_apparent_power/state"
+  - type: sensor
+    key: ACOutputActivePower
+    config:
+      UniqueID: "inverter_ac_output_active_power"
+      DeviceClass: "power"
+      Name: "Inverter AC output active power"
+      UnitOfMeasurement: "W"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_active_power/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_active_power/state"
+  - type: sensor
+    key: OutputLoadPercent
+    config:
+      UniqueID: "inverter_output_load"
+      DeviceClass: "power"
+      Name: "Inverter Output Load"
+      UnitOfMeasurement: "%"
+      ConfigTopic: "homeassistant/sensor/inverter_output_load/config"
+      StateTopic: "homeassistant/sensor/inverter_output_load/state"
+  - type: sensor
+    key: BUSVoltage
+    config:
+      UniqueID: "inverter_bus_voltage"
+      DeviceClass: "voltage"
+      Name: "Inverter Bus Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_bus_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_bus_voltage/state"
+  - type: sensor
+    key: BatteryVoltage
+    config:
+      UniqueID: "inverter_battery_voltage"
+      DeviceClass: "voltage"
+      Name: "Inverter Battery Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_voltage/state"
+  - type: sensor
+    key: BatteryChargingCurrent
+    config:
+      UniqueID: "inverter_battery_charging_current"
+      DeviceClass: "current"
+      Name: "Inverter Battery Charging Current"
+      UnitOfMeasurement: "A"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_charging_current/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_charging_current/state"
+  - type: sensor
+    key: BatteryCapacity
+    config:
+      UniqueID: "inverter_battery_capacity"
+      DeviceClass: "battery"
+      Name: "Inverter Battery Capacity"
+      UnitOfMeasurement: "%"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_capacity/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_capacity/state"
+  - type: sensor
+    key: InverterHeatSinkTemperature
+    config:
+      UniqueID: "inverter_heat_sink_temperature"
+      DeviceClass: "temperature"
+      Name: "Inverter Heat Sink Temperature"
+      UnitOfMeasurement: "°C"
+      ConfigTopic: "homeassistant/sensor/inverter_heat_sink_temperature/config"
+      StateTopic: "homeassistant/sensor/inverter_heat_sink_temperature/state"
+  - type: sensor
+    key: PVInputCurrentForBattery
+    config:
+      UniqueID: "inverter_pv_input_current_for_battery"
+      DeviceClass: "current"
+      Name: "Inverter PV Input current for battery"
+      UnitOfMeasurement: "A"
+      ConfigTopic: "homeassistant/sensor/inverter_pv_input_current_for_battery/config"
+      StateTopic: "homeassistant/sensor/inverter_pv_input_current_for_battery/state"
+  - type: sensor
+    key: PVInputVoltage
+    config:
+      UniqueID: "inverter_pv_input_battery_voltage"
+      DeviceClass: "voltage"
+      Name: "Inverter PV Input voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_pv_input_battery_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_pv_input_battery_voltage/state"
+  - type: sensor
+    key: BatteryVoltageFromSCC
+    config:
+      UniqueID: "inverter_battery_voltage_from_scc"
+      DeviceClass: "voltage"
+      Name: "Inverter Battery voltage from SCC"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_voltage_from_scc/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_voltage_from_scc/state"
+  - type: sensor
+    key: BatteryDischargeCurrent
+    config:
+      UniqueID: "inverter_battery_discharge_current"
+      DeviceClass: "current"
+      Name: "Battery discharge current"
+      UnitOfMeasurement: "A"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_discharge_current/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_discharge_current/state"
+  - type: binary_sensor
+    key: StatusSBUPriority
+    config:
+      UniqueID: "inverter_status_sbu_priority_version"
+      Name: "SBU Priority Version"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_sbu_priority_version/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_sbu_priority_version/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusConfiguration
+    config:
+      UniqueID: "inverter_status_configuration"
+      Name: "Configuration status"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_configuration/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_configuration/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusSCCFirmware
+    config:
+      UniqueID: "inverter_status_scc_firmware"
+      Name: "SCC firmware version"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_scc_firmware/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_scc_firmware/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusLoad
+    config:
+      UniqueID: "inverter_status_load"
+      Name: "Load"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_load/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_load/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusBatteryVoltageSteadyWhileCharging
+    config:
+      UniqueID: "inverter_status_battery_voltage_stdy"
+      Name: "Battery Voltage Steady While Charging"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_battery_voltage_stdy/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_battery_voltage_stdy/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusCharging
+    config:
+      UniqueID: "inverter_status_charging"
+      Name: "Charging"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_charging/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_charging/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusSCCCharging
+    config:
+      UniqueID: "inverter_status_ssc_charging"
+      Name: "SCC Charging"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_ssc_charging/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_ssc_charging/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusACCharging
+    config:
+      UniqueID: "inverter_status_ac_charging"
+      Name: "AC Charging"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_ac_charging/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_ac_charging/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: sensor
+    key: BatteryVoltageOffsetForFansOn
+    config:
+      UniqueID: "inverter_battery_voltage_offset_for_fans_on"
+      DeviceClass: "power"
+      Name: "Battery voltage offset for fans on"
+      UnitOfMeasurement: "mV"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_voltage_offset_for_fans_on/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_voltage_offset_for_fans_on/state"
+  - type: sensor
+    key: EEPROMVersion
+    config:
+      UniqueID: "inverter_eeprom_version"
+      Name: "EEPROM Version"
+      ConfigTopic: "homeassistant/sensor/inverter_eeprom_version/config"
+      StateTopic: "homeassistant/sensor/inverter_eeprom_version/state"
+  - type: sensor
+    key: PVChargingPower
+    config:
+      UniqueID: "inverter_pv_charging_power"
+      DeviceClass: "power"
+      Name: "Inverter PV Charging Power"
+      UnitOfMeasurement: "W"
+      ConfigTopic: "homeassistant/sensor/inverter_pv_charging_power/config"
+      StateTopic: "homeassistant/sensor/inverter_pv_charging_power/state"
+  - type: binary_sensor
+    key: StatusBatteryFloatingCharge
+    config:
+      UniqueID: "inverter_status_battery_floating_charge"
+      Name: "Floating Charge"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_battery_floating_charge/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_battery_floating_charge/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusSwitchOn
+    config:
+      UniqueID: "inverter_status_switch_on"
+      Name: "Inverter is turned on"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_switch_on/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_switch_on/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: StatusDustproofInstalled
+    config:
+      UniqueID: "inverter_status_dustproof_installed"
+      Name: "Inverter has dust protection"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_status_dustproof_installed/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_status_dustproof_installed/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+# endregion
+# region QPIRI
+  - type: sensor
+    key: GridRatingVoltage
+    config:
+      UniqueID: inverter_grid_rating_voltage
+      DeviceClass: "voltage"
+      Name: "Inverter Grid Rating Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_grid_rating_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_grid_rating_voltage/state"
+  - type: sensor
+    key: GridRatingCurrent
+    config:
+      UniqueID: inverter_grid_rating_current
+      DeviceClass: "current"
+      Name: "Inverter Grid Rating Current"
+      UnitOfMeasurement: "A"
+      ConfigTopic: "homeassistant/sensor/inverter_grid_rating_current/config"
+      StateTopic: "homeassistant/sensor/inverter_grid_rating_current/state"
+  - type: sensor
+    key: ACOutputRatingVoltage
+    config:
+      UniqueID: inverter_ac_output_rating_voltage
+      DeviceClass: "voltage"
+      Name: "Inverter AC Output Rating Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_rating_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_rating_voltage/state"
+  - type: sensor
+    key: ACOutputRatingFrequency
+    config:
+      UniqueID: inverter_ac_output_rating_frequency
+      Name: "Inverter AC Output Rating Frequency"
+      UnitOfMeasurement: "Hz"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_rating_frequency/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_rating_frequency/state"
+  - type: sensor
+    key: ACOutputRatingCurrent
+    config:
+      UniqueID: inverter_ac_output_rating_current
+      DeviceClass: "current"
+      Name: "Inverter AC Output Rating Current"
+      UnitOfMeasurement: "A"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_rating_current/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_rating_current/state"
+  - type: sensor
+    key: ACOutputRatingApparentPower
+    config:
+      UniqueID: inverter_ac_output_rating_apparent_power
+      DeviceClass: power
+      Name: "Inverter AC Output Rating Apparent Power"
+      UnitOfMeasurement: "VA"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_rating_apparent_power/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_rating_apparent_power/state"
+  - type: sensor
+    key: ACOutputRatingActivePower
+    config:
+      UniqueID: inverter_ac_output_rating_active_power
+      DeviceClass: "power"
+      Name: "Inverter AC Output Rating Active Power"
+      UnitOfMeasurement: "W"
+      ConfigTopic: "homeassistant/sensor/inverter_ac_output_rating_active_power/config"
+      StateTopic: "homeassistant/sensor/inverter_ac_output_rating_active_power/state"
+  - type: sensor
+    key: BatteryRatingVoltage
+    config:
+      UniqueID: inverter_battery_rating_voltage
+      DeviceClass: "voltage"
+      Name: "Inverter Battery Rating Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_rating_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_rating_voltage/state"
+  - type: sensor
+    key: BatteryRechargeVoltage
+    config:
+      UniqueID: inverter_battery_recharge_voltage
+      DeviceClass: "voltage"
+      Name: "Inverter Battery Re-chrage Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_recharge_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_recharge_voltage/state"
+  - type: sensor
+    key: BatteryUnderVoltage
+    config:
+      UniqueID: inverter_battery_under_voltage
+      DeviceClass: "voltage"
+      Name: "Inverter Battery Under Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_under_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_under_voltage/state"
+  - type: sensor
+    key: BatteryBulkVoltage
+    config:
+      UniqueID: inverter_battery_bulk_voltage
+      DeviceClass: "voltage"
+      Name: "Inverter Battery Bulk Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_bulk_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_bulk_voltage/state"
+  - type: sensor
+    key: BatteryFloatVoltage
+    config:
+      UniqueID: inverter_battery_float_voltage
+      DeviceClass: "voltage"
+      Name: "Inverter Battery Float Voltage"
+      UnitOfMeasurement: "V"
+      ConfigTopic: "homeassistant/sensor/inverter_battery_float_voltage/config"
+      StateTopic: "homeassistant/sensor/inverter_battery_float_voltage/state"
+  - type: sensor
+    key: BatteryType
+    config:
+      UniqueID: inverter_battery_type
+      DeviceClass: power
+      Name: "Inverter Battery Type"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_battery_type/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_battery_type/state"
+  - type: sensor
+    key: CurrentMaxACChargingCurrent
+    config:
+      UniqueID: inverter_current_max_acc_charging_current
+      DeviceClass: power
+      Name: "Inverter Current Max ACC Charging Current"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_current_max_acc_charging_current/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_current_max_acc_charging_current/state"
+  - type: sensor
+    key: CurrentMaxChargingCurrent
+    config:
+      UniqueID: inverter_current_max_acc_charging_current
+      DeviceClass: power
+      Name: "Inverter Current Max Charging Current"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_current_max_charging_current/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_current_max_charging_current/state"
+  - type: sensor
+    key: InputVoltageRange
+    config:
+      UniqueID: inverter_input_voltage_range
+      DeviceClass: power
+      Name: "Inverter Input Voltage Range"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_input_voltage_range/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_input_voltage_range/state"
+  - type: sensor
+    key: OutputSourcePriority
+    config:
+      UniqueID: inverter_output_source_priority
+      Name: "Inverter Output Source Priority"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_output_source_priority/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_output_source_priority/state"
+  - type: sensor
+    key: ChargerSourcePirority
+    config:
+      UniqueID: inverter_charger_source_priority
+      Name: "Inverter Charger Source Priority"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_charger_source_priority/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_charger_source_priority/state"
+  - type: sensor
+    key: ParallelMaxNumber
+    config:
+      UniqueID: inverter_charger_source_priority
+      Name: "Inverter Parallel Max Number"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_parallel_max_number/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_parallel_max_number/state"
+  - type: sensor
+    key: MachineType
+    config:
+      UniqueID: inverter_machine_type
+      Name: "Inverter Machine Type"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_machine_type/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_machine_type/state"
+  - type: sensor
+    key: Topology
+    config:
+      UniqueID: inverter_topology
+      Name: "Inverter Topology"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_topology/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_topology/state"
+  - type: sensor
+    key: OutputMode
+    config:
+      UniqueID: inverter_output_mode
+      Name: "Inverter Output Mode"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_output_mode/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_output_mode/state"
+  - type: sensor
+    key: XY
+    config:
+      UniqueID: inverter_battery_redischarge_voltage
+      DeviceClass: power
+      Name: "Inverter Battery Redischarge Voltage"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_battery_redischarge_voltage/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_battery_redischarge_voltage/state"
+  - type: sensor
+    key: PVOKConditionForParallel
+    config:
+      UniqueID: inverter_pv_ok_condition_for_parallel
+      Name: "Inverter PV OK Condition For Parallel"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_pv_ok_condition_for_parallel/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_pv_ok_condition_for_parallel/state"
+  - type: sensor
+    key: PVPowerBalance
+    config:
+      UniqueID: inverter_pv_power_balance
+      Name: "Inverter PV Power Balance"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_pv_power_balance/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_pv_power_balance/state"
+# endregion
+# region QPIWS
+  - type: binary_sensor
+    key: InverterFaultA1
+    config:
+      UniqueID: "inverter_warning_status_inverter_fault"
+      DeviceClass: "problem"
+      Name: "Inverter fault (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_fault/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_fault/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BusOverA2
+    config:
+      UniqueID: "inverter_warning_status_bus_over"
+      DeviceClass: "problem"
+      Name: "Bus Over (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_bus_over/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_bus_over/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BusUnderA3
+    config:
+      UniqueID: "inverter_warning_status_bus_under"
+      DeviceClass: "problem"
+      Name: "Bus Under (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_bus_under/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_bus_under/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BusSoftFailA4
+    config:
+      UniqueID: "inverter_warning_status_bus_under"
+      DeviceClass: "problem"
+      Name: "Bus Soft Fail (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_bus_soft_fail/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_bus_soft_fail/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BusLineFailA5
+    config:
+      UniqueID: "inverter_warning_status_line_fail"
+      DeviceClass: "problem"
+      Name: "LINE FAIL (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_line_fail/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_line_fail/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: OPVShortA6
+    config:
+      UniqueID: "inverter_warning_status_opv_short"
+      DeviceClass: "problem"
+      Name: "OPVShort (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_opv_short/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_opv_short/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: InverterVoltageTooLowA7
+    config:
+      UniqueID: "inverter_warning_status_inverter_voltage_too_low"
+      DeviceClass: "problem"
+      Name: "Inverter voltage too low (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_voltage_too_low/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_voltage_too_low/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: InverterVoltageTooHighA8
+    config:
+      UniqueID: "inverter_warning_status_inverter_voltage_too_high"
+      DeviceClass: "problem"
+      Name: "Inverter voltage too high (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_voltage_too_high/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_voltage_too_high/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: OverTemperatureA9
+    config:
+      UniqueID: "inverter_warning_status_over_temperature"
+      DeviceClass: "problem"
+      Name: "Over temperature"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_over_temperature/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_over_temperature/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: FanLockedA10
+    config:
+      UniqueID: "inverter_warning_status_fan_locked"
+      DeviceClass: "problem"
+      Name: "Fan locked"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_fan_locked/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_fan_locked/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BatteryVoltageHighA11
+    config:
+      UniqueID: "inverter_warning_status_battery_voltage_high"
+      DeviceClass: "problem"
+      Name: "Battery voltage high"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_voltage_high/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_voltage_high/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BatteryLowAlarmA12
+    config:
+      UniqueID: "inverter_warning_status_battery_low_alarm"
+      DeviceClass: "problem"
+      Name: "Battery low alarm (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_low_alarm/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_low_alarm/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: OverchargeA13
+    config:
+      UniqueID: "inverter_warning_status_battery_overcharge"
+      DeviceClass: "problem"
+      Name: "Battery overcharge (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_overcharge/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_overcharge/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BatteryUnderShutdownA14
+    config:
+      UniqueID: "inverter_warning_status_battery_under_shutdown"
+      DeviceClass: "problem"
+      Name: "Battery under shutdown (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_under_shutdown/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_under_shutdown/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BatteryDeratingA15
+    config:
+      UniqueID: "inverter_warning_status_battery_derating"
+      DeviceClass: "problem"
+      Name: "Battery derating (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_derating/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_battery_derating/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: OverLoadA16
+    config:
+      UniqueID: "inverter_warning_status_over_load"
+      DeviceClass: "problem"
+      Name: "Over load"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_over_load/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_over_load/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: EepromFaultA17
+    config:
+      UniqueID: "inverter_warning_status_eeprom_fault"
+      DeviceClass: "problem"
+      Name: "EEPROM FAULT (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_eeprom_fault/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_eeprom_fault/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: InverterOverCurrentA18
+    config:
+      UniqueID: "inverter_warning_status_inverter_over_current"
+      DeviceClass: "problem"
+      Name: "Inverter Over Current (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_over_current/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_over_current/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: InverterSoftFailA19
+    config:
+      UniqueID: "inverter_warning_status_inverter_soft_fail"
+      DeviceClass: "problem"
+      Name: "Inverter Soft Fail (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_soft_fail/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_soft_fail/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: SelfTestFailA20
+    config:
+      UniqueID: "inverter_warning_status_inverter_self_test_fail"
+      DeviceClass: "problem"
+      Name: "Self Test Fail (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_self_test_fail/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_self_test_fail/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: OPDCVoltageOverA21
+    config:
+      UniqueID: "inverter_warning_status_inverter_op_dc_voltage_over"
+      DeviceClass: "problem"
+      Name: "OP DC Voltage Over (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_op_dc_voltage_over/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_op_dc_voltage_over/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BatteryOpenA22
+    config:
+      UniqueID: "inverter_warning_status_inverter_battery_open"
+      DeviceClass: "problem"
+      Name: "Battery Open (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_battery_open/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_battery_open/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: CurrentSensorFailA23
+    config:
+      UniqueID: "inverter_warning_status_inverter_current_sensor_fail"
+      DeviceClass: "problem"
+      Name: "Current Sensor Fail (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_current_sensor_fail/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_current_sensor_fail/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BatteryShortA24
+    config:
+      UniqueID: "inverter_warning_status_inverter_battery_short"
+      DeviceClass: "problem"
+      Name: "Battery Short (Fault)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_battery_short/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_battery_short/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: PowerLimitA25
+    config:
+      UniqueID: "inverter_warning_status_inverter_power_limit"
+      DeviceClass: "problem"
+      Name: "Power limit (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_power_limit/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_power_limit/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: PVVoltageHighA26
+    config:
+      UniqueID: "inverter_warning_status_inverter_pv_voltage_high"
+      DeviceClass: "problem"
+      Name: "PV voltage high (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_pv_voltage_high/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_pv_voltage_high/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: MPPTOverloadFaultA27
+    config:
+      UniqueID: "inverter_warning_status_inverter_mppt_overload_fault"
+      DeviceClass: "problem"
+      Name: "MPPT overload fault (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_mppt_overload_fault/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_mppt_overload_fault/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: MPPTOverloadWarningA28
+    config:
+      UniqueID: "inverter_warning_status_inverter_mppt_overload_warning"
+      DeviceClass: "problem"
+      Name: "MPPT overload warning (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_mppt_overload_warning/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_mppt_overload_warning/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+  - type: binary_sensor
+    key: BatteryTooLowToChargeA29
+    config:
+      UniqueID: "inverter_warning_status_inverter_battery_too_low_to_charge"
+      DeviceClass: "problem"
+      Name: "Battery too low to charge (Warning)"
+      ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_battery_too_low_to_charge/config"
+      StateTopic: "homeassistant/binary_sensor/inverter_warning_status_inverter_battery_too_low_to_charge/state"
+      PayloadOn: "1"
+      PayloadOff: "0"
+# endregion

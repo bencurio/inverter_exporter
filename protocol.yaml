@@ -1,0 +1,564 @@
+
+# This file helps to define the communication with the inverter. If a response length is different, the program will
+# simply exit with an error.
+
+protocols:
+
+# region GET
+
+  # Device Protocol ID Inquiry
+  - command: QID
+    type: get
+    response_length: 18
+    mapping:
+      - key: SerialNumber
+        index: 0
+
+  # Device Mode Inquiry
+  - command: QMOD
+    type: get
+    response_length: 15
+    mapping:
+      - key: PowerOnMode
+        index: 0
+        regex:
+          type: MatchString
+          pattern: ^[P]$
+      - key: StandbyMode
+        index: 0
+        regex:
+          type: MatchString
+          pattern: ^[S]$
+      - key: LineMode
+        index: 0
+        regex:
+          type: MatchString
+          pattern: ^[L]$
+      - key: BatteryMode
+        index: 0
+        regex:
+          type: MatchString
+          pattern: ^[B]$
+      - key: FaultMode
+        index: 0
+        regex:
+          type: MatchString
+          pattern: ^[F]$
+      - key: PowerSavingMode
+        index: 0
+        regex:
+          type: MatchString
+          pattern: ^[H]$
+
+  # Device Protocol ID Inquiry
+  - command: QPI
+    type: get
+    response_length: 8
+    mapping:
+      - key: ProtocolID
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^PI([0-9]*)$
+          replace: $1
+
+  # Device general status parameters inquiry
+  - command: QPIGS
+    type: get
+    response_length: 110
+    mapping:
+      - key: GridVoltage
+        index: 0
+      - key: GridFrequency
+        index: 1
+      - key: ACOutputVoltage
+        index: 2
+      - key: ACOutputFrequency
+        index: 3
+      - key: ACOutputApparentPower
+        index: 4
+      - key: ACOutputActivePower
+        index: 5
+      - key: OutputLoadPercent
+        index: 6
+      - key: BUSVoltage
+        index: 7
+      - key: BatteryVoltage
+        index: 8
+      - key: BatteryChargingCurrent
+        index: 9
+      - key: BatteryCapacity
+        index: 10
+      - key: InverterHeatSinkTemperature
+        index: 11
+      - key: PVInputCurrentForBattery
+        index: 12
+      - key: PVInputVoltage
+        index: 13
+      - key: BatteryVoltageFromSCC
+        index: 14
+      - key: BatteryDischargeCurrent
+        index: 15
+      - key: StatusSBUPriority
+        index: 16
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $1
+      - key: StatusConfiguration
+        index: 16
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $2
+      - key: StatusSCCFirmware
+        index: 16
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $3
+      - key: StatusLoad
+        index: 16
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $4
+      - key: StatusBatteryVoltageStdy
+        index: 16
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $5
+      - key: StatusCharging
+        index: 16
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $6
+      - key: StatusSCCCharging
+        index: 16
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $7
+      - key: StatusACCharging
+        index: 16
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $8
+      - key: BatteryVoltageOffsetForFansOn
+        index: 17
+      - key: EEPROMVersion
+        index: 18
+      - key: PVChargingPower
+        index: 19
+      - key: StatusBatteryFloatingCharge
+        index: 20
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])$
+          replace: $1
+      - key: StatusSwitchOn
+        index: 20
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])$
+          replace: $2
+      - key: StatusDustproofInstalled
+        index: 20
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])$
+          replace: $3
+
+  # Device Rating Information Inquiry
+  - command: QPIRI
+    type: get
+    response_length: 98
+    mapping:
+      - key: GridRatingVoltage
+        index: 0
+      - key: GridRatingCurrent
+        index: 1
+      - key: ACOutputRatingVoltage
+        index: 2
+      - key: ACOutputRatingFrequency
+        index: 3
+      - key: ACOutputRatingCurrent
+        index: 4
+      - key: ACOutputRatingApparentPower
+        index: 5
+      - key: ACOutputRatingActivePower
+        index: 6
+      - key: BatteryRatingVoltage
+        index: 7
+      - key: BatteryRechargeVoltage
+        index: 8
+      - key: BatteryUnderVoltage
+        index: 9
+      - key: BatteryBulkVoltage
+        index: 10
+      - key: BatteryFloatVoltage
+        index: 11
+      - key: BatteryType
+        index: 12
+      - key: BatteryTypeAGM
+        index: 12
+        regex:
+          type: MatchString
+          pattern: ^[0]$
+      - key: BatteryTypeFlooded
+        index: 12
+        regex:
+          type: MatchString
+          pattern: ^[1]$
+      - key: BatteryTypeUser
+        index: 12
+        regex:
+          type: MatchString
+          pattern: ^[2]$
+      - key: CurrentMaxACChargingCurrent
+        index: 13
+      - key: CurrentMaxChargingCurrent
+        index: 14
+      - key: InputVoltageRange
+        index: 15
+      - key: InputVoltageRangeAppliance
+        index: 15
+        regex:
+          type: MatchString
+          pattern: ^[0]$
+      - key: InputVoltageRangeUPS
+        index: 15
+        regex:
+          type: MatchString
+          pattern: ^[1]$
+      - key: OutputSourcePriority
+        index: 16
+      - key: OutputSourcePriorityUtilityFirst
+        index: 16
+        regex:
+          type: MatchString
+          pattern: ^[0]$
+      - key: OutputSourcePrioritySolarFirst
+        index: 16
+        regex:
+          type: MatchString
+          pattern: ^[1]$
+      - key: OutputSourcePrioritySBUPriority
+        index: 16
+        regex:
+          type: MatchString
+          pattern: ^[2]$
+      - key: ChargerSourcePirority
+        index: 17
+      - key: ChargerSourcePirorityUtilityFirst
+        index: 17
+        regex:
+          type: MatchString
+          pattern: ^[0]$
+      - key: ChargerSourcePiroritySolarFirst
+        index: 17
+        regex:
+          type: MatchString
+          pattern: ^[1]$
+      - key: ChargerSourcePirorityUtilityAndSolar
+        index: 17
+        regex:
+          type: MatchString
+          pattern: ^[2]$
+      - key: ChargerSourcePirorityOnlySolar
+        index: 17
+        regex:
+          type: MatchString
+          pattern: ^[3]$
+      - key: ParallelMaxNumber
+        index: 18
+      - key: MachineType
+        index: 19
+      - key: Topology
+        index: 20
+      - key: TopologyTransformerless
+        index: 20
+        regex:
+          type: MatchString
+          pattern: ^[0]$
+      - key: TopologyTransformer
+        index: 20
+        regex:
+          type: MatchString
+          pattern: ^[1]$
+      - key: OutputMode
+        index: 21
+      - key: BatteryRedischargeVoltage
+        index: 22
+      - key: PVOKConditionForParallel
+        index: 23
+      - key: PVPowerBalance
+        index: 24
+
+  # Device Warning Status Inquiry
+  - command: QPIWS
+    type: get
+    response_length: 40
+    mapping:
+      - key: InverterFaultA1
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $2
+      - key: BusOverA2
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $3
+      - key: BusUnderA3
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $4
+      - key: BusSoftFailA4
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $5
+      - key: LineFailA5
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $6
+      - key: OPVShortA6
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $7
+      - key: InverterVoltageTooLowA7
+        index: 0
+        regex:
+          type: ReplaceAllString
+          replace: $8
+      - key: InverterVoltageTooHighA8
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $9
+      - key: OverTemperatureA9
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $10
+      - key: FanLockedA10
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $11
+      - key: BatteryVoltageHighA11
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $12
+      - key: BatteryLowAlarmA12
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $13
+      - key: OverchargeA13
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $14
+      - key: BatteryUnderShutdownA14
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $15
+      - key: BatteryDeratingA15
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $16
+      - key: OverLoadA16
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $17
+      - key: EepromFaultA17
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $18
+      - key: InverterOverCurrentA18
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $19
+      - key: InverterSoftFailA19
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $20
+      - key: SelfTestFailA20
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $21
+      - key: OPDCVoltageOverA21
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $22
+      - key: BatteryOpenA22
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $23
+      - key: CurrentSensorFailA23
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $24
+      - key: BatteryShortA24
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $25
+      - key: PowerLimitA25
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $26
+      - key: PVVoltageHighA26
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $27
+      - key: MPPTOverloadFaultA27
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $28
+      - key: MPPTOverloadWarningA28
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $29
+      - key: BatteryTooLowToChargeA29
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])([0-1])$
+          replace: $30
+
+  # Main CPU Firmware version inquiry
+  - command: QVFW
+    type: get
+    response_length: 18
+    mapping:
+      - key: FirmwareVersion
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^VERFW:(.*)$
+          replace: $1
+
+  # Another CPU Firmware version inquiry
+  - command: QVFW2
+    type: get
+    response_length: 19
+    mapping:
+      - key: AnotherFirmwareVersion
+        index: 0
+        regex:
+          type: ReplaceAllString
+          pattern: ^VERFW2:(.*)$
+          replace: $1
+
+# endregion
+
+  # region SET
+  - type: set
+    mapping:
+
+      # region POP<nn> - Setting device output priority
+      - key: SetOutputSourcePriorityToUtilityFirst
+        command: POP00
+        responses:
+          ok: ACK
+          fail: NAK
+      - key: SetOutputSourcePriorityToSolarFirst
+        command: POP01
+        responses:
+          ok: ACK
+          fail: NAK
+      - key: SetOutputSourcePriorityToSBUPriority
+        command: POP02
+        responses:
+          ok: ACK
+          fail: NAK
+      # endregion
+
+      # region PCP<nn> - Setting device charger priority
+      - key: SetDeviceChargerPriorityToUtilityFirst
+        command: PCP00
+        responses:
+          ok: ACK
+          fail: NAK
+      - key: SetDeviceChargerPriorityToSolarFirst
+        command: PCP01
+        responses:
+          ok: ACK
+          fail: NAK
+      - key: SetDeviceChargerPriorityToSolarAndUtility
+        command: PCP02
+        responses:
+          ok: ACK
+          fail: NAK
+      - key: SetDeviceChargerPriorityToOnlySolarCharging
+        command: PCP03
+        responses:
+          ok: ACK
+          fail: NAK
+      # endregion
+
+      # region PGR<nn> - Setting device grid working range
+      - key: SetDeviceGridWorkingRangeToAppliance
+        command: PGR00
+        responses:
+          ok: ACK
+          fail: NAK
+      - key: SetDeviceGridWorkingRangeToUPS
+        command: PGR01
+        responses:
+          ok: ACK
+          fail: NAK
+      # endregion
+
+# endregion

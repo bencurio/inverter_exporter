@@ -1,0 +1,86 @@
+# MQTT Discovery
+
+    <discovery_prefix>/device_automation/[<node_id>/]<object_id>/config.
+
+    <component>             : One of the supported MQTT components, eg. binary_sensor.
+
+    <node_id> (Optional)    : ID of the node providing the topic, this is not
+                              used by Home Assistant but may be used to structure
+                              the MQTT topic. The ID of the node must only consist
+                              of characters from the character class [a-zA-Z0-9_-].
+
+    <object_id>             : The ID of the device. This is only to allow for
+                              separate topics for each device and is not used for
+                              the entity_id. The ID of the device must only consist
+                              of characters from the character class [a-zA-Z0-9_-].
+
+# Examples
+
+## 1. Configure
+
+$ mosquitto_pub -h 127.0.0.1 -p 1883 \
+    -t "homeassistant/binary_sensor/garden/config" \
+    -m '{"name": "garden", "device_class": "motion", "state_topic": "homeassistant/binary_sensor/garden/state"}'
+
+## 2. Update state
+
+$ mosquitto_pub -h 127.0.0.1 -p 1883 \
+    -t "homeassistant/binary_sensor/garden/state" \
+    -m ON
+
+## 3. Delete state
+
+$ mosquitto_pub -h 127.0.0.1 -p 1883 \
+    -t "homeassistant/binary_sensor/garden/config" \
+    -m ''
+
+# Sensors with multiple values
+
+topic no1 -> `homeassistant/sensor/sensorBedroomT/config`
+
+payload no1 ->
+```json
+{
+    "device_class": "temperature",
+    "name": "Temperature",
+    "state_topic": "homeassistant/sensor/sensorBedroom/state", <------- Important ----------
+    "unit_of_measurement": "°C",
+    "value_template": "{{ value_json.temperature }}" <--------- Jinja2 -----------
+}
+```
+
+topic no2 -> `homeassistant/sensor/sensorBedroomH/config`
+```json
+{
+    "device_class": "humidity",
+    "name": "Humidity",
+    "state_topic": "homeassistant/sensor/sensorBedroom/state", <------- Important ----------
+    "unit_of_measurement": "%",
+    "value_template": "{{ value_json.humidity }}" <--------- Jinja2 -----------
+}
+```
+
+common states payload
+
+```json
+{ "temperature": 23.20, "humidity": 43.70 }
+```
+
+# Switches
+
+- Configuration topic: `homeassistant/switch/irrigation/config`
+- State topic: `homeassistant/switch/irrigation/state`
+- Command topic: `homeassistant/switch/irrigation/set`
+- Payload: `{"name": "garden", "command_topic": "homeassistant/switch/irrigation/set", "state_topic": "homeassistant/switch/irrigation/state"}`
+
+$ mosquitto_pub -h 127.0.0.1 -p 1883 \
+    -t "homeassistant/switch/irrigation/config" \
+    -m '{"name": "garden", "command_topic": "homeassistant/switch/irrigation/set", "state_topic": "homeassistant/switch/irrigation/state"}'
+
+Set the state
+
+$ mosquitto_pub -h 127.0.0.1 -p 1883 \
+    -t "homeassistant/switch/irrigation/set" \
+    -m ON
+
+See more: https://www.home-assistant.io/docs/mqtt/discovery/

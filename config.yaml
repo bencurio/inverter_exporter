@@ -1,0 +1,36 @@
+
+inverter:
+
+  communication:
+    type: RS232
+    protocol_file: ../../protocol.yaml
+    config:
+      port_name: "COM7"
+      braud_rate: 2400
+      data_bits: 8
+      parity_mode: 0
+      stop_bits: 1
+      minimum_read_size: 3
+      crc:
+        table: XMODEM
+        #           (
+        first_byte: 0x28
+        #         <CR>
+        eol_byte: 0x0D
+
+  exporters:
+    - type: HOMEASSISTANT_MQTT
+      scheme_file: ../../homeassistant.yaml
+      config:
+        scheme: tcp
+        broker: '127.0.0.1'
+        port: 1883
+        client_id: 'teszt'
+        username: ''
+        password: ''
+    - type: PROMETHEUS_EXPORTER
+      scheme_file: ../../prometheus.yaml
+      config:
+        host: 0.0.0.0
+        port: 2112
+        path: /mertics

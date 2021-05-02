@@ -1,0 +1,19 @@
+https://github.com/containerssh/structutils
+https://github.com/haveyoudebuggedit/go-patterns
+
+https://dev.to/koddr/let-s-write-config-for-your-golang-web-app-on-right-way-yaml-5ggp
+https://www.home-assistant.io/docs/mqtt/discovery/
+    -> https://www.home-assistant.io/integrations/mqtt/
+    -> https://www.home-assistant.io/integrations/switch.mqtt/
+    -> https://www.home-assistant.io/integrations/sensor.mqtt/
+    -> https://www.home-assistant.io/integrations/device_trigger.mqtt/
+    -> https://www.home-assistant.io/integrations/device_tracker.mqtt/
+    -> https://www.home-assistant.io/integrations/binary_sensor.mqtt/
+        -> https://www.home-assistant.io/integrations/binary_sensor/#device-class
+https://www.cloudamqp.com/docs/go_mqtt.html
+https://www.emqx.io/blog/how-to-use-mqtt-in-golang
+https://github.com/eclipse/paho.golang
+
+https://github.com/asaskevich/govalidator
+https://github.com/go-validator/validator
+https://github.com/go-ozzo/ozzo-validation
