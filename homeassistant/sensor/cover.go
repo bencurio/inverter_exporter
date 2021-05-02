@@ -4,9 +4,8 @@ import (
 	"bencurio/inverter_exporter/homeassistant/common"
 )
 
-// @see https://www.home-assistant.io/integrations/cover.mqtt/
-
-type Cover struct { //nolint:maligned
+// Cover platform allows you to control an MQTT cover (such as blinds, a roller shutter or a garage door).
+type Cover struct {
 	ConfigTopic            string              `validate:"required" yaml:"ConfigTopic" json:"config_topic,omitempty"`
 	Availability           common.Availability `yaml:"Availability,omitempty" json:"availability,omitempty"`
 	AvailabilityMode       string              `yaml:"AvailabilityMode,omitempty" json:"availability_mode" default:"online"` // TODO enum
@@ -49,3 +48,5 @@ type Cover struct { //nolint:maligned
 	UniqueID               string              `yaml:"UniqueID,omitempty" json:"unique_id,omitempty"`
 	ValueTemplate          string              `yaml:"ValueTemplate,omitempty" json:"value_template,omitempty"`
 }
+
+// @see https://www.home-assistant.io/integrations/cover.mqtt/

@@ -4,8 +4,10 @@ import (
 	"bencurio/inverter_exporter/homeassistant/common"
 )
 
-// @see https://www.home-assistant.io/integrations/alarm_control_panel.mqtt
-
+// AlarmControlPanel The mqtt alarm panel platform enables the possibility to control MQTT capable alarm panels.
+// The Alarm icon will change state after receiving a new state from state_topic. If these messages are published with
+// RETAIN flag, the MQTT alarm panel will receive an instant state update after subscription and will start with the
+// correct state. Otherwise, the initial state will be unknown.
 type AlarmControlPanel struct { //nolint:maligned
 	ConfigTopic            string               `validate:"required" yaml:"ConfigTopic" json:"config_topic,omitempty"`
 	Availability           *common.Availability `yaml:"Availability,omitempty" json:"availability,omitempty"`
@@ -34,8 +36,12 @@ type AlarmControlPanel struct { //nolint:maligned
 	ValueTemplate          string               `yaml:"ValueTemplate,omitempty" json:"value_template,omitempty"`
 }
 
+// @see https://www.home-assistant.io/integrations/alarm_control_panel.mqtt
+
+// AlarmControlPanelCommandState defines which commands are accepted by the Home Assistant.
 type AlarmControlPanelCommandState string
 
+// These states can be used for the alarm panel.
 const (
 	ALARM_CONTROL_PANEL_STATE_DISARMED            AlarmControlPanelCommandState = "disarmed"
 	ALARM_CONTROL_PANEL_STATE_ARMED_HOME          AlarmControlPanelCommandState = "armed_home"

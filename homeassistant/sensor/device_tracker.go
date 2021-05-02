@@ -1,7 +1,8 @@
 package sensor
 
-// @see https://www.home-assistant.io/integrations/device_tracker.mqtt/
-
+// DeviceTracker platform allows you to define new device_trackers through manual YAML configuration in
+// configuration.yaml and also to automatically discover device_trackers through a discovery schema using the
+// MQTT Discovery protocol.
 type DeviceTracker struct {
 	ConfigTopic    string `validate:"required" yaml:"ConfigTopic" json:"config_topic,omitempty"`
 	Devices        string `validate:"required" yaml:"Devices,omitempty" json:"devices"` // TODO list?
@@ -10,3 +11,5 @@ type DeviceTracker struct {
 	PayloadNotHome string `yaml:"PayloadNotHome,omitempty" json:"payload_stop,omitempty" default:"not_home"`
 	SourceType     string `yaml:"SourceType,omitempty" json:"source_type,omitempty"` // TODO enum?
 }
+
+// @see https://www.home-assistant.io/integrations/device_tracker.mqtt/

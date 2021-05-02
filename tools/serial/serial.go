@@ -15,7 +15,7 @@ type Config struct {
 	BraudRate       uint               `validate:"required,numeric" yaml:"braud_rate" default:"2400"`
 	DataBits        uint               `validate:"required,numeric" yaml:"data_bits" default:"8"`
 	StopBits        uint               `validate:"required,numeric" yaml:"stop_bits" default:"1"`
-	ParityMode      jserial.ParityMode `validate:"required" yaml:"parity_mode" default:"0"`
+	ParityMode      jserial.ParityMode `yaml:"parity_mode" default:"0"`
 	MinimumReadSize uint               `validate:"required,numeric" yaml:"minimum_read_size" default:"3"`
 	CRC             CRC                `yaml:"crc"`
 }

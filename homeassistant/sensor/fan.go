@@ -4,9 +4,7 @@ import (
 	"bencurio/inverter_exporter/homeassistant/common"
 )
 
-// @see https://www.home-assistant.io/integrations/fan.mqtt
-// @see https://www.home-assistant.io/integrations/fan.mqtt/#full-configuration
-
+// Fan platform lets you control your MQTT enabled fans.
 type Fan struct {
 	ConfigTopic              string              `validate:"required" yaml:"ConfigTopic" json:"config_topic,omitempty"`
 	Availability             common.Availability `yaml:"Availability,omitempty" json:"availability,omitempty"`
@@ -40,3 +38,6 @@ type Fan struct {
 	StateValueTemplate       string              `yaml:"StateValueTemplate,omitempty" json:"state_value_template"`
 	UniqueID                 string              `yaml:"UniqueID,omitempty" json:"unique_id,omitempty"`
 }
+
+// @see https://www.home-assistant.io/integrations/fan.mqtt
+// @see https://www.home-assistant.io/integrations/fan.mqtt/#full-configuration

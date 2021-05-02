@@ -4,8 +4,7 @@ import (
 	"bencurio/inverter_exporter/homeassistant/common"
 )
 
-// @see https://www.home-assistant.io/integrations/scene.mqtt/
-
+// Scene platform lets you control your MQTT enabled scenes.
 type Scene struct {
 	ConfigTopic         string              `validate:"required" yaml:"ConfigTopic" json:"config_topic,omitempty"`
 	Availability        common.Availability `yaml:"Availability,omitempty" json:"availability,omitempty"`
@@ -20,3 +19,5 @@ type Scene struct {
 	Retain              bool                `yaml:"Retain,omitempty" json:"retain" default:"false"`
 	UniqueID            string              `yaml:"UniqueID,omitempty" json:"unique_id,omitempty"`
 }
+
+// @see https://www.home-assistant.io/integrations/scene.mqtt/

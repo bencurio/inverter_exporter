@@ -38,7 +38,6 @@ type Communication struct {
 	Config       interface{}       `validate:"required" yaml:"config"`
 }
 
-
 type ExporterType string
 
 const (
@@ -108,7 +107,6 @@ func (c *Config) LoadFile(configFile string) error {
 	return nil
 }
 
-
 type tmpCommunication struct {
 	Type         string      `validate:"required" yaml:"type"`
 	ProtocolFile string      `validate:"required" yaml:"protocol_file"`
@@ -132,7 +130,7 @@ func (c *Communication) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	switch CommunicationType(configData.Type) {
 	case CommunicationTypeRS232:
-		realResult = serial.Config{}
+		realResult = &serial.Config{}
 	default:
 		return fmt.Errorf("unsupported inverter communication protocol: %s", configData.Type)
 	}

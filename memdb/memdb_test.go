@@ -41,10 +41,10 @@ func TestMemDBInsert(t *testing.T) {
 	}
 
 	test := map[string]tmpTest{
-		"test1": tmpTest{key: "a", value: "string", excepted: "string"},
-		"test2": tmpTest{key: "b", value: 0, excepted: "int"},
-		"test3": tmpTest{key: "c", value: false, excepted: "bool"},
-		"test4": tmpTest{key: "d", value: 100.55, excepted: "float64"},
+		"test1": {key: "a", value: "string", excepted: "string"},
+		"test2": {key: "b", value: 0, excepted: "int"},
+		"test3": {key: "c", value: false, excepted: "bool"},
+		"test4": {key: "d", value: 100.55, excepted: "float64"},
 	}
 
 	for _, value := range test {

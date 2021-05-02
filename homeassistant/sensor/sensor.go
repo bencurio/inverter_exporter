@@ -4,8 +4,9 @@ import (
 	"bencurio/inverter_exporter/homeassistant/common"
 )
 
-// @see https://www.home-assistant.io/integrations/sensor.mqtt/
-
+// Sensor platform uses the MQTT message payload as the sensor value. If messages in this state_topic are published with
+// RETAIN flag, the sensor will receive an instant update with last known value. Otherwise, the initial state will
+// be undefined.
 type Sensor struct {
 	ConfigTopic            string               `validate:"required" yaml:"ConfigTopic" json:"config_topic,omitempty"`
 	Availability           *common.Availability `yaml:"Availability,omitempty" json:"availability,omitempty"`
@@ -27,3 +28,5 @@ type Sensor struct {
 	UnitOfMeasurement      string               `yaml:"UnitOfMeasurement,omitempty" json:"unit_of_measurement,omitempty"`
 	ValueTemplate          string               `yaml:"ValueTemplate,omitempty" json:"value_template,omitempty"`
 }
+
+// @see https://www.home-assistant.io/integrations/sensor.mqtt/

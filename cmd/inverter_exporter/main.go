@@ -8,7 +8,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"time"
 )
 
 // use a single instance of Validate, it caches struct info
@@ -53,5 +52,16 @@ func Run(config *inverter_exporter.Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	if err := sensors.Clean(); err != nil {
+		return
+	}
+
+	fmt.Printf("%v", config.Inverter.Communication)
+	fmt.Printf("%v", config.Inverter.Communication.Config)
+	fmt.Printf("%v", config.Inverter.Communication.Type)
+	fmt.Printf("%v", config.Inverter.Communication.Protocol)
+	fmt.Printf("%v", config.Inverter.Communication.ProtocolFile)
+	fmt.Printf("%v", config.Inverter.Exporters)
 
 }

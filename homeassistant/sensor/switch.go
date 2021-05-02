@@ -4,8 +4,7 @@ import (
 	"bencurio/inverter_exporter/homeassistant/common"
 )
 
-// @see https://www.home-assistant.io/integrations/switch.mqtt/
-
+// Switch platform lets you control your MQTT enabled switches.
 type Switch struct { //nolint:maligned
 	ConfigTopic            string               `validate:"required" yaml:"ConfigTopic" json:"config_topic,omitempty"`
 	Availability           *common.Availability `yaml:"Availability,omitempty" json:"availability,omitempty"`
@@ -30,3 +29,5 @@ type Switch struct { //nolint:maligned
 	UniqueID               string               `yaml:"UniqueID,omitempty" json:"unique_id,omitempty"`
 	ValueTemplate          string               `yaml:"ValueTemplate,omitempty" json:"value_template,omitempty"`
 }
+
+// @see https://www.home-assistant.io/integrations/switch.mqtt/

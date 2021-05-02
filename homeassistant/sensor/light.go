@@ -4,8 +4,7 @@ import (
 	"bencurio/inverter_exporter/homeassistant/common"
 )
 
-// @see https://www.home-assistant.io/integrations/climate.mqtt/
-
+// Light platform lets you control your MQTT enabled lights through one of the supported message schemas, default, json or template.
 type Light struct { //nolint:maligned
 	ConfigTopic              string               `validate:"required" yaml:"ConfigTopic" json:"config_topic,omitempty"`
 	Availability             *common.Availability `yaml:"Availability,omitempty" json:"availability,omitempty"`
@@ -56,3 +55,5 @@ type Light struct { //nolint:maligned
 	XYStateTopic             string               `yaml:"XYStateTopic,omitempty" json:"xy_state_topic,omitempty"`
 	XYValueTemplate          string               `yaml:"XYValueTemplate,omitempty" json:"xy_value_template,omitempty"`
 }
+
+// @see https://www.home-assistant.io/integrations/climate.mqtt/

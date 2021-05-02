@@ -1,6 +1,5 @@
 package serial
 
-
 //func TestNewCommand(t *testing.T) {
 //
 //	// region CRC check (with correct CRC)
