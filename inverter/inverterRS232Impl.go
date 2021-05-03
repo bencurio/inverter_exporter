@@ -6,8 +6,10 @@ import (
 	serial "bencurio/inverter_exporter/tools/serial"
 	"bufio"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type inverterRS232Impl struct {
@@ -37,21 +39,65 @@ func NewInverterRS232(config inverter_exporter.Config, memdb *memdb.MemDB) (Inve
 		return nil, fmt.Errorf("invalid inverter communication type: %s", config.Inverter.Communication.Type)
 	}
 
-	serialConfig := config.Inverter.Communication.Config.(serial.Config)
-	serialPort, _ := serial.NewSerial(serialConfig)
+	serialConfig := config.Inverter.Communication.Config.(*serial.Config)
+	serialPort, _ := serial.NewSerial(*serialConfig)
 
 	if err := serialPort.Open(); err != nil {
 		return nil, err
 	}
 
-	return &inverterRS232Impl{
+	inv := &inverterRS232Impl{
 		config: config,
 		memdb:  *memdb,
 		serial: serialPort,
-	}, nil
+	}
+	if err := inv.Run(); err != nil {
+		return nil, err
+	}
+
+	return inv, nil
+}
+
+func (i inverterRS232Impl) Run() error {
+	go func() {
+		// FIXME Hard-coded query time!
+		for _ = range time.Tick(time.Second * 10) {
+			if err := i.readAllSensors(); err != nil {
+				log.Warnf("InverterRS232Impl.readAllSensors: %v", err)
+			}
+		}
+	}()
+	return nil
+}
+
+func (i inverterRS232Impl) readAllSensors() error {
+	for _, sensors := range i.config.Inverter.Communication.Protocol.Protocols {
+
+		if sensors.Type == inverter_exporter.PROTOCOL_TYPE_SET {
+			continue
+		}
+
+		if _, err := i.serial.Write([]byte(sensors.Command)); err != nil {
+			log.Errorf("serial.Write: %w", err)
+			continue
+		}
+
+		data, err := i.serial.ReadWithTimeout(5)
+		if err != nil {
+			log.Errorf("serial.ReadWithTimeout: %w", err)
+		}
+
+		if err := i.rawHandler(sensors.Command, data); err != nil {
+			log.Errorf("InverterRS232Impl.rawHandler: %w", err)
+		}
+	}
+	return nil
 }
 
 func (i inverterRS232Impl) rawHandler(command string, data []byte) error {
+
+	// <(><PAYLOAD><CRC><CR> ----> <PAYLOAD>
+	data = data[1 : len(data)-3]
 
 	scanner := bufio.NewScanner(strings.NewReader(string(data)))
 	scanner.Split(bufio.ScanWords)
@@ -82,8 +128,8 @@ func (i inverterRS232Impl) rawHandler(command string, data []byte) error {
 
 	for _, m := range protocolSpec.Mapping {
 		if v, ok := index[m.Index]; ok {
-			// Comile regex
-			if len(m.Regex.Pattern) > 0 {
+			// Compile regex
+			if m.Regex != nil {
 				v, _ = i.compileRegex(v, m.Regex)
 			}
 

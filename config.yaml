@@ -5,7 +5,7 @@ inverter:
     type: RS232
     protocol_file: ../../protocol.yaml
     config:
-      port_name: "COM7"
+      port_name: "COM9"
       braud_rate: 2400
       data_bits: 8
       parity_mode: 0

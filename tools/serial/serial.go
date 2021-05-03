@@ -31,7 +31,7 @@ type Serial interface {
 	Close() error
 	Read() ([]byte, error)
 	ReadWithTimeout(timeout time.Duration) ([]byte, error)
-	Write(data []byte) error
+	Write(data []byte) (int, error)
 	CheckCRC(data []byte) error
 	AppendCRC(data []byte) ([]byte, error)
 }
@@ -49,23 +49,30 @@ func (s serial) Read() ([]byte, error) {
 	}
 
 	r := bufio.NewReader(s.port)
-	var bytes []byte
+	var data []byte
 	for {
-		tkn, err := r.ReadBytes(eol)
+		tkn, err := r.ReadByte()
 		if err != nil {
 			break
 		}
-		bytes = append(bytes, tkn...)
+		data = append(data, tkn)
+		if tkn == eol {
+			break
+		}
 	}
+
+	log.Debugf("serial.Read: %s", string(data))
+	log.Debugf("serial.Read: %v", data)
+	log.Debugf("serial.Read: %d bytes", len(data))
 
 	// If this value is set in the configuration, a CRC check is performed.
 	if len(s.config.CRC.Table) != 0 {
-		if err := s.CheckCRC(bytes); err != nil {
+		if err := s.CheckCRC(data); err != nil {
 			return nil, err
 		}
 	}
 
-	return bytes, nil
+	return data, nil
 }
 
 func (s serial) ReadWithTimeout(timeout time.Duration) ([]byte, error) {
@@ -75,6 +82,7 @@ func (s serial) ReadWithTimeout(timeout time.Duration) ([]byte, error) {
 	go func() {
 		var err error
 		buffer, err = s.Read()
+		log.Debugf("read = %v", buffer)
 		done <- err
 	}()
 
@@ -87,27 +95,32 @@ func (s serial) ReadWithTimeout(timeout time.Duration) ([]byte, error) {
 }
 
 // Write data to serial
-func (s serial) Write(data []byte) error {
+func (s *serial) Write(data []byte) (int, error) {
 	// If this value is set in the configuration, a CRC check is performed.
 	if len(s.config.CRC.Table) != 0 {
 		var err error
 		data, err = s.AppendCRC(data)
 		if err != nil {
-			return fmt.Errorf("AppendCRC: %w", err)
+			return 0, fmt.Errorf("AppendCRC: %w", err)
 		}
 	}
-	if _, err := s.port.Write(data); err != nil {
-		return fmt.Errorf("port.Write: %w", err)
+
+	log.Debugf("serial.Write: %s", string(data))
+	log.Debugf("serial.Write: %v", data)
+
+	n, err := s.port.Write(data)
+	if err != nil {
+		return 0, fmt.Errorf("port.Write: %w", err)
 	}
-	return nil
+
+	log.Debugf("serial.Write: %d bytes", n)
+
+	return n, nil
 }
 
 func (s serial) AppendCRC(data []byte) ([]byte, error) {
 	if len(data) == 0 {
 		return nil, fmt.Errorf("empty data")
-	}
-	if s.config.CRC.FirstByte != 0 && data[0] != s.config.CRC.FirstByte {
-		return nil, fmt.Errorf("invalid first byte")
 	}
 
 	switch s.config.CRC.Table {
@@ -142,18 +155,18 @@ func (s serial) CheckCRC(data []byte) error {
 
 	switch s.config.CRC.Table {
 	case "XMODEM":
-		crcTable := crc.NewTable(crc.XMODEM)
 		if dataLength < 3 {
 			return fmt.Errorf("data is too short")
 		}
 
 		var crcCheck uint64
 		crcCheck <<= 8
-		crcCheck += uint64(data[dataLength-2])
+		crcCheck += uint64(data[dataLength-3])
 		crcCheck <<= 8
-		crcCheck += uint64(data[dataLength-1])
+		crcCheck += uint64(data[dataLength-2])
 
 		// Payload: [<FirstByte>]<PAYLOAD>[<CRC><CR>]
+		crcTable := crc.NewTable(crc.XMODEM)
 		crcCalc := crcTable.CalculateCRC(data[:dataLength-3])
 		if crcCheck != crcCalc {
 			return fmt.Errorf("crc mismatch (%d != %d)", crcCheck, crcCalc)
@@ -165,7 +178,7 @@ func (s serial) CheckCRC(data []byte) error {
 }
 
 // Open creates an io.ReadWriteCloser based on the supplied options struct.
-func (s serial) Open() error {
+func (s *serial) Open() error {
 	options := jserial.OpenOptions{
 		PortName:        s.config.PortName,
 		BaudRate:        s.config.BraudRate,

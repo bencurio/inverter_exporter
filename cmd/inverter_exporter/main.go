@@ -2,12 +2,13 @@ package main
 
 import (
 	"bencurio/inverter_exporter"
+	"bencurio/inverter_exporter/inverter"
 	"bencurio/inverter_exporter/memdb"
 	"flag"
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"time"
 )
 
 // use a single instance of Validate, it caches struct info
@@ -57,11 +58,24 @@ func Run(config *inverter_exporter.Config) {
 		return
 	}
 
-	fmt.Printf("%v", config.Inverter.Communication)
-	fmt.Printf("%v", config.Inverter.Communication.Config)
-	fmt.Printf("%v", config.Inverter.Communication.Type)
-	fmt.Printf("%v", config.Inverter.Communication.Protocol)
-	fmt.Printf("%v", config.Inverter.Communication.ProtocolFile)
-	fmt.Printf("%v", config.Inverter.Exporters)
+	switch config.Inverter.Communication.Type {
+	case inverter_exporter.CommunicationTypeRS232:
+		if _, err := inverter.NewInverterRS232(*config, &sensors); err != nil {
+			log.Errorf("NewInverterRS232: %v", err)
+			return
+		}
+	}
 
+	log.Infof("Waiting for data from the Inverter")
+	time.Sleep(time.Second * 15)
+
+	s, _ := sensors.GetAll()
+	if len(s) == 0 {
+		log.Fatal("No data was received from the inverter. Incorrect settings?")
+	}
+
+	log.Infof("Working ...")
+	for {
+		time.Sleep(time.Second * 60)
+	}
 }
