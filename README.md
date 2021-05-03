@@ -2,4 +2,6 @@
 
 ![Home Assistant](./docs/assets/header.jpg)
 
-Work in progress. Do not use in production! :-)
+This project does not yet have a first working release, but we are working on it! :-)
+
+[See our roadmap](https://github.com/bencurio/inverter_exporter/projects/2)
