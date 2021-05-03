@@ -3,7 +3,7 @@ package inverter
 import (
 	"bencurio/inverter_exporter"
 	"bencurio/inverter_exporter/memdb"
-	serial "bencurio/inverter_exporter/tools/serial"
+	"bencurio/inverter_exporter/tools/serial"
 	"bufio"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -61,7 +61,7 @@ func NewInverterRS232(config inverter_exporter.Config, memdb *memdb.MemDB) (Inve
 func (i inverterRS232Impl) Run() error {
 	go func() {
 		// FIXME Hard-coded query time!
-		for _ = range time.Tick(time.Second * 10) {
+		for range time.Tick(time.Second * 10) {
 			if err := i.readAllSensors(); err != nil {
 				log.Warnf("InverterRS232Impl.readAllSensors: %v", err)
 			}
@@ -78,17 +78,17 @@ func (i inverterRS232Impl) readAllSensors() error {
 		}
 
 		if _, err := i.serial.Write([]byte(sensors.Command)); err != nil {
-			log.Errorf("serial.Write: %w", err)
+			log.Errorf("serial.Write: %v", err)
 			continue
 		}
 
 		data, err := i.serial.ReadWithTimeout(5)
 		if err != nil {
-			log.Errorf("serial.ReadWithTimeout: %w", err)
+			log.Errorf("serial.ReadWithTimeout: %v", err)
 		}
 
 		if err := i.rawHandler(sensors.Command, data); err != nil {
-			log.Errorf("InverterRS232Impl.rawHandler: %w", err)
+			log.Errorf("InverterRS232Impl.rawHandler: %v", err)
 		}
 	}
 	return nil

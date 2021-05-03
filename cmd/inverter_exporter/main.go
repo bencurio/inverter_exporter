@@ -5,14 +5,10 @@ import (
 	"bencurio/inverter_exporter/inverter"
 	"bencurio/inverter_exporter/memdb"
 	"flag"
-	"github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
-
-// use a single instance of Validate, it caches struct info
-var validate *validator.Validate
 
 func init() {
 	// TODO: Some of the logging-related settings will be made configurable later.

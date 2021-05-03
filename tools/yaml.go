@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"errors"
 	"fmt"
 	"os"
 )
@@ -12,7 +11,7 @@ func ValidateFile(file string) error {
 		return err
 	}
 	if stat.IsDir() {
-		return errors.New(fmt.Sprintf("'%s' is a directory!", file))
+		return fmt.Errorf("'%s' is a directory!", file)
 	}
 	return nil
 }
