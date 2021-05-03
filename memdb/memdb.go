@@ -1,8 +1,12 @@
 package memdb
 
 import (
+	"bytes"
+	"crypto/sha512"
+	"encoding/gob"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"time"
 )
 
@@ -39,6 +43,12 @@ type MemDB interface {
 
 	// Exist -> Does the specified key exist?
 	Exist(key string) bool
+
+	// Dump values to file
+	Dump(filename string) error
+
+	// Load values from file
+	Load(filename string) error
 }
 
 func NewMemDB(dataVariable *map[string]interface{}) (MemDB, error) {
@@ -65,6 +75,12 @@ func NewMemDB(dataVariable *map[string]interface{}) (MemDB, error) {
 type memdb struct {
 	datastore map[string]interface{}
 	ttlstore  map[string]int64
+}
+
+type dump struct {
+	Datastore map[string]interface{}
+	TTLstore  map[string]int64
+	Checksum  [64]byte
 }
 
 // Get retrieves a value from memory by key.
@@ -159,5 +175,69 @@ func (m *memdb) Clean() error {
 			return err
 		}
 	}
+	return nil
+}
+
+type tmpDump struct {
+	memdb *tmpDumpValues `yaml:"memdb" json:"memdb"`
+}
+
+type tmpDumpValues struct {
+	key   string      `yaml:"key" json:"key"`
+	value interface{} `yaml:"value" json:"value"`
+}
+
+// Dump memory database to file
+func (m *memdb) Dump(filename string) error {
+	w := new(bytes.Buffer)
+	encoder := gob.NewEncoder(w)
+
+	d := &dump{}
+	d.TTLstore = m.ttlstore
+	d.Datastore = m.datastore
+	d.Checksum = [64]byte{}
+
+	checksum := sha512.Sum512([]byte(fmt.Sprintf("%v", d)))
+	d.Checksum = checksum
+
+	if err := encoder.Encode(d); err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(filename, w.Bytes(), 0644); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Load data from memory database
+func (m *memdb) Load(filename string) error {
+	f, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	r := bytes.NewBuffer(f)
+	decoder := gob.NewDecoder(r)
+
+	d := &dump{}
+	if err := decoder.Decode(&d); err != nil {
+		return err
+	}
+
+	exportedChecksum := d.Checksum
+
+	// Delete the Checksum value extracted from the file to make the calculation correct.
+	d.Checksum = [64]byte{}
+
+	calculatedChecksum := sha512.Sum512([]byte(fmt.Sprintf("%v", d)))
+
+	if calculatedChecksum != exportedChecksum {
+		return fmt.Errorf("invalid checksum: %s", filename)
+	}
+
+	m.ttlstore = d.TTLstore
+	m.datastore = d.Datastore
+
 	return nil
 }
