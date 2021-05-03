@@ -1,7 +1,9 @@
-package homeassistant
+package inverter_exporter
 
 import (
+	ha "bencurio/inverter_exporter/homeassistant"
 	"bencurio/inverter_exporter/homeassistant/sensor"
+	"bencurio/inverter_exporter/memdb"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,32 +12,39 @@ import (
 	"reflect"
 )
 
-type Config struct {
-	HomeAssistant []ConfigSensor `yaml:"homeassistant"`
+type HomeAssistantConfig struct {
+	HomeAssistant []HomeAssistantConfigSensor `yaml:"homeassistant"`
 }
 
-type ConfigSensor struct {
-	Type   Sensor      `yaml:"type"`
+type HomeAssistantConfigSensor struct {
+	Type   ha.Sensor   `yaml:"type"`
 	Key    string      `yaml:"key"`
 	Config interface{} `yaml:"config"`
 }
 
 type HomeAssistant interface {
-	ConfigureSensor(sensor ConfigSensor) error
+	ConfigureSensor(sensor HomeAssistantConfigSensor) error
 	UpdateSensor(sensor interface{}, value interface{}) error
 	SubscribeSensor(sensor interface{}) error
 }
 
 type AbstractHomeAssistant struct{}
 
-func NewHomeAssistant(client mqtt.Client) (HomeAssistant, error) {
+func NewHomeAssistant(config *Config, exporterConfig *ExporterConfigHomeAssistantMQTT, scheme *HomeAssistantConfig, sensors *memdb.MemDB) (HomeAssistant, error) {
 	return &homeassistant{
-		client: client,
+		config:         config,
+		exporterConfig: exporterConfig,
+		scheme:         scheme,
+		sensors:        sensors,
 	}, nil
 }
 
 type homeassistant struct {
-	client mqtt.Client
+	mqttClient     mqtt.Client
+	config         *Config
+	exporterConfig *ExporterConfigHomeAssistantMQTT
+	scheme         *HomeAssistantConfig
+	sensors        *memdb.MemDB
 }
 
 func (h homeassistant) SubscribeSensor(sensor interface{}) error {
@@ -43,8 +52,8 @@ func (h homeassistant) SubscribeSensor(sensor interface{}) error {
 	panic("implement me")
 }
 
-func (h homeassistant) ConfigureSensor(sensor ConfigSensor) error {
-	if !h.client.IsConnected() {
+func (h homeassistant) ConfigureSensor(sensor HomeAssistantConfigSensor) error {
+	if !h.mqttClient.IsConnected() {
 		return errors.New("mqtt client isn't connected")
 	}
 
@@ -53,7 +62,7 @@ func (h homeassistant) ConfigureSensor(sensor ConfigSensor) error {
 		return err
 	}
 
-	sensorStruct, err := getSensorStructByTypeName(sensor.Type)
+	sensorStruct, err := ha.GetSensorStructByTypeName(sensor.Type)
 	if err != nil {
 		return err
 	}
@@ -71,7 +80,7 @@ func (h homeassistant) ConfigureSensor(sensor ConfigSensor) error {
 		return err
 	}
 
-	if token := h.client.Publish(configTopic, 0, false, sensorPayload); token.Wait() && token.Error() != nil {
+	if token := h.mqttClient.Publish(configTopic, 0, false, sensorPayload); token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
 
@@ -85,7 +94,7 @@ type tmpUpdateSensor struct {
 }
 
 func (h homeassistant) UpdateSensor(sensor interface{}, value interface{}) error {
-	if !h.client.IsConnected() {
+	if !h.mqttClient.IsConnected() {
 		return errors.New("mqtt client isn't connected")
 	}
 
@@ -109,7 +118,7 @@ func (h homeassistant) UpdateSensor(sensor interface{}, value interface{}) error
 		return errors.New("unsupported sensor")
 	}
 
-	if token := h.client.Publish(tmpSensor.StateTopic, 0, false, output); token.Wait() && token.Error() != nil {
+	if token := h.mqttClient.Publish(tmpSensor.StateTopic, 0, false, output); token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
 
@@ -117,12 +126,12 @@ func (h homeassistant) UpdateSensor(sensor interface{}, value interface{}) error
 }
 
 type tmpSensor struct {
-	Type   Sensor      `yaml:"type"`
+	Type   ha.Sensor   `yaml:"type"`
 	Key    string      `yaml:"key"`
 	Config interface{} `yaml:"config"`
 }
 
-func (c *ConfigSensor) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (c *HomeAssistantConfigSensor) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	configData := &tmpSensor{}
 
 	if err := unmarshal(&configData); err != nil {
@@ -132,33 +141,33 @@ func (c *ConfigSensor) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var realResult interface{}
 
 	switch configData.Type {
-	case ALARM_CONTROL_PANEL:
+	case ha.ALARM_CONTROL_PANEL:
 		realResult = &sensor.AlarmControlPanel{}
-	case BINARY_SENSOR:
+	case ha.BINARY_SENSOR:
 		realResult = &sensor.BinarySensor{}
-	case CAMERA:
+	case ha.CAMERA:
 		realResult = &sensor.Camera{}
-	case CLIMATE:
+	case ha.CLIMATE:
 		realResult = &sensor.Climate{}
-	case COVER:
+	case ha.COVER:
 		realResult = &sensor.Cover{}
-	case DEVICE_TRACKER:
+	case ha.DEVICE_TRACKER:
 		realResult = &sensor.DeviceTracker{}
-	case DEVICE_TRIGGER:
+	case ha.DEVICE_TRIGGER:
 		realResult = &sensor.DeviceTrigger{}
-	case FAN:
+	case ha.FAN:
 		realResult = &sensor.Fan{}
-	case LIGHT:
+	case ha.LIGHT:
 		realResult = &sensor.Light{}
-	case LOCK:
+	case ha.LOCK:
 		realResult = &sensor.Lock{}
-	case SCENE:
+	case ha.SCENE:
 		realResult = &sensor.Scene{}
-	case SENSOR:
+	case ha.SENSOR:
 		realResult = &sensor.Sensor{}
-	case SWITCH:
+	case ha.SWITCH:
 		realResult = &sensor.Switch{}
-	case TAG:
+	case ha.TAG:
 		realResult = &sensor.Tag{}
 	default:
 		return fmt.Errorf("unsupportred sensor: %s", configData.Type)

@@ -33,7 +33,7 @@ type Protocols struct {
 	Protocols []*Protocol `validate:"required" yaml:"protocols"`
 }
 
-// Protocol contains the structure of the protocol.yaml file.
+// Protocol contains the structure of the protocol.example.yaml file.
 type Protocol struct {
 	Command        string             `yaml:"command"`
 	Type           ProtocolType       `validate:"required" yaml:"type"`

@@ -1,0 +1,429 @@
+prometheus:
+# region QMOD
+  - type: Gauge
+    key: PowerOnMode
+    config:
+      name: "inverter_mode_power_on"
+      help: "Inverter Power On Mode (UOM: Boolean)"
+  - type: Gauge
+    key: StandbyMode
+    config:
+      name: "inverter_mode_standby"
+      help: "Inverter Standby Mode (UOM: Boolean)"
+  - type: Gauge
+    key: LineMode
+    config:
+      name: "inverter_mode_line_mode"
+      help: "Inverter Line Mode (UOM: Boolean)"
+  - type: Gauge
+    key: BatteryMode
+    config:
+      name: "inverter_mode_battery"
+      help: "Inverter Battery Mode (UOM: Boolean)"
+  - type: Gauge
+    key: FaultMode
+    config:
+      name: "inverter_mode_fault"
+      help: "Inverter Fault Mode (UOM: Boolean)"
+  - type: Gauge
+    key: PowerSavingMode
+    config:
+      name: "inverter_mode_power_saving"
+      help: "Inverter Power Saving Mode (UOM: Boolean)"
+# endregion
+# region QPIGS
+  - type: Gauge
+    key: GridVoltage
+    config:
+      name: "inverter_grid_voltage"
+      help: "Inverer Grid Voltage (UOM: V)"
+  - type: Gauge
+    key: GridFrequency
+    config:
+      name: "inverter_grid_frequency"
+      help: "Inverer Grid Voltage (UOM: Hz)"
+  - type: Gauge
+    key: ACOutputVoltage
+    config:
+      name: "inverter_ac_output_voltage"
+      help: "Inverter AC Output Voltage (UOM: V)"
+  - type: Gauge
+    key: ACOutputFrequency
+    config:
+      name: "inverter_ac_output_frequency"
+      help: "Inverter AC Output Frequency (UOM: Hz)"
+  - type: Gauge
+    key: ACOutputApparentPower
+    config:
+      name: "inverter_ac_output_apparent_power"
+      help: "Inverter AC output apparent power (UOM: VA)"
+  - type: Gauge
+    key: ACOutputActivePower
+    config:
+      name: "inverter_ac_output_active_power"
+      help: "Inverter AC output active power (UOM: W)"
+  - type: Gauge
+    key: OutputLoadPercent
+    config:
+      name: "inverter_output_load"
+      help: "Inverter Output Load (UOM: %)"
+  - type: Gauge
+    key: BUSVoltage
+    config:
+      name: "inverter_bus_voltage"
+      help: "Inverter Bus Voltage (UOM: V)"
+  - type: Gauge
+    key: BatteryVoltage
+    config:
+      name: "inverter_battery_voltage"
+      help: "Inverter Battery Voltage (UOM: V)"
+  - type: Gauge
+    key: BatteryChargingCurrent
+    config:
+      name: "inverter_battery_charging_current"
+      help: "Inverter Battery Charging Current (UOM: A)"
+  - type: Gauge
+    key: BatteryCapacity
+    config:
+      name: "inverter_battery_capacity"
+      help: "Inverter Battery Capacity (UOM: %)"
+  - type: Gauge
+    key: InverterHeatSinkTemperature
+    config:
+      name: "inverter_heat_sink_temperature"
+      help: "Inverter Heat Sink Temperature (UOM: °C)"
+  - type: Gauge
+    key: PVInputCurrentForBattery
+    config:
+      name: "inverter_pv_input_current_for_battery"
+      help: "Inverter PV Input current for battery (UOM: A)"
+  - type: Gauge
+    key: PVInputVoltage
+    config:
+      name: "inverter_pv_input_battery_voltage"
+      help: "Inverter PV Input voltage (UOM: V)"
+  - type: Gauge
+    key: BatteryVoltageFromSCC
+    config:
+      name: "inverter_battery_voltage_from_scc"
+      help: "Inverter Battery voltage from SCC (UOM: V)"
+  - type: Gauge
+    key: BatteryDischargeCurrent
+    config:
+      name: "inverter_battery_discharge_current"
+      help: "Battery discharge current (UOM: A)"
+  - type: Gauge
+    key: StatusSBUPriority
+    config:
+      name: "inverter_status_sbu_priority_version"
+      help: "SBU Priority Version (UOM: Boolean)"
+  - type: Gauge
+    key: StatusConfiguration
+    config:
+      name: "inverter_status_configuration"
+      help: "Configuration status (UOM: Boolean)"
+  - type: Gauge
+    key: StatusSCCFirmware
+    config:
+      name: "inverter_status_scc_firmware"
+      help: "SCC firmware version (UOM: Boolean)"
+  - type: Gauge
+    key: StatusLoad
+    config:
+      name: "inverter_status_load"
+      help: "Load (UOM: Boolean)"
+  - type: Gauge
+    key: StatusBatteryVoltageSteadyWhileCharging
+    config:
+      name: "inverter_status_battery_voltage_stdy"
+      help: "Battery Voltage Steady While Charging (UOM: Boolean)"
+  - type: Gauge
+    key: StatusCharging
+    config:
+      name: "inverter_status_charging"
+      help: "Charging (UOM: Boolean)"
+  - type: Gauge
+    key: StatusSCCCharging
+    config:
+      name: "inverter_status_ssc_charging"
+      help: "SCC Charging (UOM: Boolean)"
+  - type: Gauge
+    key: StatusACCharging
+    config:
+      name: "inverter_status_ac_charging"
+      help: "AC Charging (UOM: Boolean)"
+  - type: Gauge
+    key: BatteryVoltageOffsetForFansOn
+    config:
+      name: "inverter_battery_voltage_offset_for_fans_on"
+      help: "Battery voltage offset for fans on (UOM: mV)"
+  - type: Gauge
+    key: PVChargingPower
+    config:
+      name: "inverter_pv_charging_power"
+      help: "Inverter PV Charging Power (UOM: W)"
+  - type: Gauge
+    key: StatusBatteryFloatingCharge
+    config:
+      name: "inverter_status_battery_floating_charge"
+      help: "Floating Charge (UOM: Boolean)"
+  - type: Gauge
+    key: StatusSwitchOn
+    config:
+      name: "inverter_status_switch_on"
+      help: "Inverter is turned on (UOM: Boolean)"
+  - type: Gauge
+    key: StatusDustproofInstalled
+    config:
+      name: "inverter_status_dustproof_installed"
+      help: "Inverter has dust protection (UOM: Boolean)"
+# endregion
+# region QPIRI
+  - type: Gauge
+    key: GridRatingVoltage
+    config:
+      name: "inverter_grid_rating_voltage"
+      help: "Inverter Grid Rating Voltage (UOM: V)"
+  - type: Gauge
+    key: GridRatingCurrent
+    config:
+      name: "inverter_grid_rating_current"
+      help: "Inverter Grid Rating Current (UOM: A)"
+  - type: Gauge
+    key: ACOutputRatingVoltage
+    config:
+      name: "inverter_ac_output_rating_voltage"
+      help: "Inverter AC Output Rating Voltage (UOM: V)"
+  - type: Gauge
+    key: ACOutputRatingFrequency
+    config:
+      name: "inverter_ac_output_rating_frequency"
+      help: "Inverter AC Output Rating Frequency (UOM: Hz)"
+  - type: Gauge
+    key: ACOutputRatingCurrent
+    config:
+      name: "inverter_ac_output_rating_current"
+      help: "Inverter AC Output Rating Current (UOM: A)"
+  - type: Gauge
+    key: ACOutputRatingApparentPower
+    config:
+      name: "inverter_ac_output_rating_apparent_power"
+      help: "Inverter AC Output Rating Apparent Power (UOM: VA)"
+  - type: Gauge
+    key: ACOutputRatingActivePower
+    config:
+      name: "inverter_ac_output_rating_active_power"
+      help: "Inverter AC Output Rating Active Power (UOM: W)"
+  - type: Gauge
+    key: BatteryRatingVoltage
+    config:
+      name: "inverter_battery_rating_voltage"
+      help: "Inverter Battery Rating Voltage (UOM: V)"
+  - type: Gauge
+    key: BatteryRechargeVoltage
+    config:
+      name: "inverter_battery_recharge_voltage"
+      help: "Inverter Battery Re-chrage Voltage (UOM: V)"
+  - type: Gauge
+    key: BatteryUnderVoltage
+    config:
+      name: "inverter_battery_under_voltage"
+      help: "Inverter Battery Under Voltage (UOM: V)"
+  - type: Gauge
+    key: BatteryBulkVoltage
+    config:
+      name: "inverter_battery_bulk_voltage"
+      help: "Inverter Battery Bulk Voltage (UOM: V)"
+  - type: Gauge
+    key: BatteryFloatVoltage
+    config:
+      name: "inverter_battery_float_voltage"
+      help: "Inverter Battery Float Voltage (UOM: V)"
+  - type: Gauge
+    key: CurrentMaxACChargingCurrent
+    config:
+      name: "inverter_current_max_acc_charging_current"
+      help: "Inverter Current Max ACC Charging Current (UOM: A?)"
+  - type: Gauge
+    key: CurrentMaxChargingCurrent
+    config:
+      name: "inverter_current_max_charging_current"
+      help: "Inverter Current Max Charging Current (UOM: A?)"
+  - type: Gauge
+    key: ParallelMaxNumber
+    config:
+      name: "inverter_charger_source_priority"
+      help: "Inverter Parallel Max Number (UOM: Integer)"
+  - type: Gauge
+    key: MachineType
+    config:
+      name: "inverter_machine_type"
+      help: "Inverter Machine Type (UOM: Integer)"
+  - type: Gauge
+    key: Topology
+    config:
+      name: "inverter_topology"
+      help: "Inverter Topology (UOM: Integer)"
+  - type: Gauge
+    key: OutputMode
+    config:
+      name: "inverter_output_mode"
+      help: "Inverter Output Mode (UOM: Integer)"
+  - type: Gauge
+    key: BatteryRedischargeVoltage
+    config:
+      name: "inverter_battery_redischarge_voltage"
+      help: "Inverter Battery Redischarge Voltage (UOM: V)"
+  - type: Gauge
+    key: PVOKConditionForParallel
+    config:
+      name: "inverter_pv_ok_condition_for_parallel"
+      help: "Inverter PV OK Condition For Parallel (UOM: Boolean)"
+# endregion
+# region QPIWS
+  - type: Gauge
+    key: InverterFaultA1
+    config:
+      name: "inverter_warning_status_inverter_fault"
+      help: "Inverter fault (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: BusOverA2
+    config:
+      name: "inverter_warning_status_bus_over"
+      help: "Bus Over (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: BusUnderA3
+    config:
+      name: "inverter_warning_status_bus_under"
+      help: "Bus Under (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: BusSoftFailA4
+    config:
+      name: "inverter_warning_status_bus_soft_fail"
+      help: "Bus Soft Fail (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: BusLineFailA5
+    config:
+      name: "inverter_warning_status_line_fail"
+      help: "LINE FAIL (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: OPVShortA6
+    config:
+      name: "inverter_warning_status_opv_short"
+      help: "OPVShort (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: InverterVoltageTooLowA7
+    config:
+      name: "inverter_warning_status_inverter_voltage_too_low"
+      help: "Inverter voltage too low (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: InverterVoltageTooHighA8
+    config:
+      name: "inverter_warning_status_inverter_voltage_too_high"
+      help: "Inverter voltage too high (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: OverTemperatureA9
+    config:
+      name: "inverter_warning_status_over_temperature"
+      help: "Over temperature (Type: Boolean)"
+  - type: Gauge
+    key: FanLockedA10
+    config:
+      name: "inverter_warning_status_fan_locked"
+      help: "Fan locked (Type: Boolean)"
+  - type: Gauge
+    key: BatteryVoltageHighA11
+    config:
+      name: "inverter_warning_status_battery_voltage_high"
+      help: "Battery voltage high (Type: Boolean)"
+  - type: Gauge
+    key: BatteryLowAlarmA12
+    config:
+      name: "inverter_warning_status_battery_low_alarm"
+      help: "Battery low alarm (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: OverchargeA13
+    config:
+      name: "inverter_warning_status_battery_overcharge"
+      help: "Battery overcharge (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: BatteryUnderShutdownA14
+    config:
+      name: "inverter_warning_status_battery_under_shutdown"
+      help: "Battery under shutdown (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: BatteryDeratingA15
+    config:
+      name: "inverter_warning_status_battery_derating"
+      help: "Battery derating (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: OverLoadA16
+    config:
+      name: "inverter_warning_status_over_load"
+      help: "Over load (Type: Boolean)"
+  - type: Gauge
+    key: EepromFaultA17
+    config:
+      name: "inverter_warning_status_eeprom_fault"
+      help: "EEPROM FAULT (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: InverterOverCurrentA18
+    config:
+      name: "inverter_warning_status_inverter_over_current"
+      help: "Inverter Over Current (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: InverterSoftFailA19
+    config:
+      name: "inverter_warning_status_inverter_soft_fail"
+      help: "Inverter Soft Fail (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: SelfTestFailA20
+    config:
+      name: "inverter_warning_status_inverter_self_test_fail"
+      help: "Self Test Fail (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: OPDCVoltageOverA21
+    config:
+      name: "inverter_warning_status_inverter_op_dc_voltage_over"
+      help: "OP DC Voltage Over (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: BatteryOpenA22
+    config:
+      name: "inverter_warning_status_inverter_battery_open"
+      help: "Battery Open (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: CurrentSensorFailA23
+    config:
+      name: "inverter_warning_status_inverter_current_sensor_fail"
+      help: "Current Sensor Fail (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: BatteryShortA24
+    config:
+      name: "inverter_warning_status_inverter_battery_short"
+      help: "Battery Short (Fault) (Type: Boolean)"
+  - type: Gauge
+    key: PowerLimitA25
+    config:
+      name: "inverter_warning_status_inverter_power_limit"
+      help: "Power limit (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: PVVoltageHighA26
+    config:
+      name: "inverter_warning_status_inverter_pv_voltage_high"
+      help: "PV voltage high (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: MPPTOverloadFaultA27
+    config:
+      name: "inverter_warning_status_inverter_mppt_overload_fault"
+      help: "MPPT overload fault (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: MPPTOverloadWarningA28
+    config:
+      name: "inverter_warning_status_inverter_mppt_overload_warning"
+      help: "MPPT overload warning (Warning) (Type: Boolean)"
+  - type: Gauge
+    key: BatteryTooLowToChargeA29
+    config:
+      name: "inverter_warning_status_inverter_battery_too_low_to_charge"
+      help: "Battery too low to charge (Warning) (Type: Boolean)"
+# endregion

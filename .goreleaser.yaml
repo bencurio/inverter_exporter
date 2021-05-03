@@ -1,0 +1,75 @@
+before:
+  hooks:
+    - go vet
+    - go generate
+    - go test
+builds:
+  - id: inverter_exporter
+    main: cmd/inverter_exporter/main.go
+    binary: "inverter_exporter"
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    env:
+      - CGO_ENABLED=0
+archives:
+  - builds:
+      - inverter_exporter
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE.md
+      - config.example.yaml
+      - homeassistant.example.yaml
+      - prometheus.example.yaml
+      - protocol.example.yaml
+nfpms:
+  - vendor: bencurio
+    homepage: https://bencur.io
+    maintainer: Bence Santha <sb@nf.hu>
+    description: Inverter Exporter for Voltronic, Axpert, Mppsolar PIP, etc Inverte
+    license: MIT
+    builds:
+      - inverter_exporter
+    formats:
+      - deb
+      - rpm
+      - apk
+    empty_folders:
+      - /etc/inverter_exporter
+    bindir: /usr/sbin
+    contents:
+      - src: config.example.yaml
+        dst: /etc/inverter_exporter/config.example.yaml
+        type: config
+      - src: homeassistant.example.yaml
+        dst: /etc/inverter_exporter/homeassistant.example.yaml
+        type: config
+      - src: prometheus.example.yaml
+        dst: /etc/inverter_exporter/prometheus.example.yaml
+        type: config
+      - src: protocol.example.yaml
+        dst: /etc/inverter_exporter/protocol.example.yaml
+        type: config
+      - src: LICENSE.md
+        dst: /usr/share/doc/inverter_exporter/LICENSE.md
+signs:
+  - id: sign-all
+    artifacts: all
+source:
+  enabled: true
+  name_template: '{{ .ProjectName }}-{{ .Version }}-source'
+dist: build
+release:
+  github:
+    owner: bencurio
+    name: inverter_exporter
+  prerelease: auto
+  extra_files:
+    - glob: LICENSE.md

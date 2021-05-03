@@ -55,7 +55,7 @@ func NewMemDB(dataVariable *map[string]interface{}) (MemDB, error) {
 	ttlstore := map[string]int64{}
 
 	go func() {
-		for now := range time.Tick(time.Second) {
+		for now := range time.NewTicker(time.Second).C {
 			for key, expire := range ttlstore {
 				if now.Unix() >= expire {
 					log.Debugf("%s was deleted (expired ttl)", key)
@@ -178,15 +178,6 @@ func (m *memdb) Clean() error {
 	return nil
 }
 
-type tmpDump struct {
-	memdb *tmpDumpValues `yaml:"memdb" json:"memdb"`
-}
-
-type tmpDumpValues struct {
-	key   string      `yaml:"key" json:"key"`
-	value interface{} `yaml:"value" json:"value"`
-}
-
 // Dump memory database to file
 func (m *memdb) Dump(filename string) error {
 	w := new(bytes.Buffer)
@@ -203,7 +194,7 @@ func (m *memdb) Dump(filename string) error {
 	if err := encoder.Encode(d); err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(filename, w.Bytes(), 0644); err != nil {
+	if err := ioutil.WriteFile(filename, w.Bytes(), 0600); err != nil {
 		return err
 	}
 

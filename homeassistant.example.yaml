@@ -449,7 +449,7 @@ homeassistant:
   - type: sensor
     key: CurrentMaxChargingCurrent
     config:
-      UniqueID: inverter_current_max_acc_charging_current
+      UniqueID: inverter_current_max_charging_current
       DeviceClass: power
       Name: "Inverter Current Max Charging Current"
       ConfigTopic: "homeassistant/binary_sensor/inverter_current_max_charging_current/config"
@@ -505,7 +505,7 @@ homeassistant:
       ConfigTopic: "homeassistant/binary_sensor/inverter_output_mode/config"
       StateTopic: "homeassistant/binary_sensor/inverter_output_mode/state"
   - type: sensor
-    key: XY
+    key: BatteryRedischargeVoltage
     config:
       UniqueID: inverter_battery_redischarge_voltage
       DeviceClass: power
@@ -561,7 +561,7 @@ homeassistant:
   - type: binary_sensor
     key: BusSoftFailA4
     config:
-      UniqueID: "inverter_warning_status_bus_under"
+      UniqueID: "inverter_warning_status_bus_soft_fail"
       DeviceClass: "problem"
       Name: "Bus Soft Fail (Fault)"
       ConfigTopic: "homeassistant/binary_sensor/inverter_warning_status_bus_soft_fail/config"

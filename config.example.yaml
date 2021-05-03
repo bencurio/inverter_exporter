@@ -1,11 +1,15 @@
 
 inverter:
 
+  log:
+    level: debug
+    out: stdout
+
   communication:
     type: RS232
-    protocol_file: ../../protocol.yaml
+    protocol_file: /etc/inverter_exporter/protocol.yaml
     config:
-      port_name: "COM9"
+      port_name: "/dev/ttyUSB0"
       braud_rate: 2400
       data_bits: 8
       parity_mode: 0
@@ -13,23 +17,25 @@ inverter:
       minimum_read_size: 3
       crc:
         table: XMODEM
+        # The first byte in the reply message.
         #           (
         first_byte: 0x28
+        # The last byte in the reply message.
         #         <CR>
         eol_byte: 0x0D
 
   exporters:
     - type: HOMEASSISTANT_MQTT
-      scheme_file: ../../homeassistant.yaml
+      scheme_file: /etc/inverter_exporter/homeassistant.yaml
       config:
         scheme: tcp
         broker: '127.0.0.1'
         port: 1883
-        client_id: 'teszt'
+        client_id: 'inverter_exporter_1'
         username: ''
         password: ''
     - type: PROMETHEUS_EXPORTER
-      scheme_file: ../../prometheus.yaml
+      scheme_file: /etc/inverter_exporter/prometheus.yaml
       config:
         host: 0.0.0.0
         port: 2112

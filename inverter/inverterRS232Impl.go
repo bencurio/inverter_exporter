@@ -59,9 +59,11 @@ func NewInverterRS232(config inverter_exporter.Config, memdb *memdb.MemDB) (Inve
 }
 
 func (i inverterRS232Impl) Run() error {
+	log.Info("InverterRS232 init")
+
 	go func() {
 		// FIXME Hard-coded query time!
-		for range time.Tick(time.Second * 10) {
+		for range time.NewTicker(time.Second * 10).C {
 			if err := i.readAllSensors(); err != nil {
 				log.Warnf("InverterRS232Impl.readAllSensors: %v", err)
 			}
@@ -72,7 +74,6 @@ func (i inverterRS232Impl) Run() error {
 
 func (i inverterRS232Impl) readAllSensors() error {
 	for _, sensors := range i.config.Inverter.Communication.Protocol.Protocols {
-
 		if sensors.Type == inverter_exporter.PROTOCOL_TYPE_SET {
 			continue
 		}
@@ -94,9 +95,7 @@ func (i inverterRS232Impl) readAllSensors() error {
 	return nil
 }
 
-func (i inverterRS232Impl) rawHandler(command string, data []byte) error {
-
-	// <(><PAYLOAD><CRC><CR> ----> <PAYLOAD>
+func (i inverterRS232Impl) rawHandler(command string, data []byte) error { // <(><PAYLOAD><CRC><CR> ----> <PAYLOAD>
 	data = data[1 : len(data)-3]
 
 	scanner := bufio.NewScanner(strings.NewReader(string(data)))

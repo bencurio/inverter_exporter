@@ -10,28 +10,11 @@ import (
 	"time"
 )
 
-func init() {
-	// TODO: Some of the logging-related settings will be made configurable later.
-	log.SetFormatter(&log.TextFormatter{
-		DisableColors: true,
-		FullTimestamp: true,
-	})
-	log.SetOutput(os.Stdout)
-	log.SetLevel(log.DebugLevel)
-
-	log.Infof("log.GetLevel: %s", log.GetLevel())
-}
-
 func main() {
 	var configFile string
 
-	flag.StringVar(&configFile, "config", "./config/config.yaml", "Config file")
+	flag.StringVar(&configFile, "config", "./config.example.yaml", "Config file")
 	flag.Parse()
-
-	//config, err := models.NewConfig(configFile)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
 
 	config, err := inverter_exporter.NewConfig(configFile)
 	if err != nil {
@@ -42,36 +25,99 @@ func main() {
 }
 
 func Run(config *inverter_exporter.Config) {
+	initLog(config)
 
+	log.Infof(" - Inverter Exporter init")
+
+	log.Info(" - MemDB Sensors init")
 	sensorsMemDB := map[string]interface{}{}
+	sensors := initSensorsMemDB(sensorsMemDB)
 
-	sensors, err := memdb.NewMemDB(&sensorsMemDB)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Info(" - Inverter Monitor init")
+	initInverterMonitor(config, &sensors)
 
-	if err := sensors.Clean(); err != nil {
-		return
-	}
-
-	switch config.Inverter.Communication.Type {
-	case inverter_exporter.CommunicationTypeRS232:
-		if _, err := inverter.NewInverterRS232(*config, &sensors); err != nil {
-			log.Errorf("NewInverterRS232: %v", err)
-			return
-		}
-	}
-
-	log.Infof("Waiting for data from the Inverter")
+	log.Infof("   - Waiting for the first communication with inverter")
 	time.Sleep(time.Second * 15)
 
 	s, _ := sensors.GetAll()
 	if len(s) == 0 {
-		log.Fatal("No data was received from the inverter. Incorrect settings?")
+		log.Fatal("   - No data was received from the inverter. Incorrect settings?")
 	}
+	log.Infof("   - Working ...")
 
-	log.Infof("Working ...")
+	log.Infof(" - Init Exporters")
+	initExporters(config, &sensors)
+
 	for {
 		time.Sleep(time.Second * 60)
+	}
+}
+
+func initLog(config *inverter_exporter.Config) {
+	if config.Inverter.Log != nil {
+		log.SetFormatter(&log.TextFormatter{
+			FullTimestamp: true,
+		})
+
+		log.SetLevel(config.Inverter.Log.Level)
+
+		switch config.Inverter.Log.Out {
+		case "stdout":
+			log.SetOutput(os.Stdout)
+		case "stderr":
+			log.SetOutput(os.Stderr)
+		case "file":
+			if len(config.Inverter.Log.File) == 0 {
+				log.Fatal("you must specify the log file name")
+			}
+			if file, err := os.OpenFile(config.Inverter.Log.File, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0640); err != nil {
+				log.Errorf("os.OpenFile: %v", err)
+			} else {
+				log.SetOutput(file)
+			}
+		default:
+			log.Fatalf("invalid log out: %s", config.Inverter.Log.Out)
+		}
+	}
+}
+
+func initSensorsMemDB(sensorsMemDB map[string]interface{}) memdb.MemDB {
+	sensors, err := memdb.NewMemDB(&sensorsMemDB)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return sensors
+}
+
+func initInverterMonitor(config *inverter_exporter.Config, sensors *memdb.MemDB) {
+	switch config.Inverter.Communication.Type {
+	case inverter_exporter.CommunicationTypeRS232:
+		if _, err := inverter.NewInverterRS232(*config, sensors); err != nil {
+			log.Errorf("NewInverterRS232: %v", err)
+			return
+		}
+	}
+}
+
+func initExporters(config *inverter_exporter.Config, sensors *memdb.MemDB) {
+	for _, exporter := range config.Inverter.Exporters {
+		switch exporter.Type {
+		case inverter_exporter.ExporterTypeHomeAssistantMQTT:
+			log.Infof("  - Exporter: Home Assitant via MQTT init")
+			exporterConfig := exporter.Config.(*inverter_exporter.ExporterConfigHomeAssistantMQTT)
+			scheme := exporter.Scheme.(*inverter_exporter.HomeAssistantConfig)
+			if _, err := inverter_exporter.NewHomeAssistant(config, exporterConfig, scheme, sensors); err != nil {
+				log.Fatal(err)
+			}
+		case inverter_exporter.ExporterTypePrometheusExporter:
+			log.Infof("  - Exporter: Prometheus Exporter")
+			exporterConfig := exporter.Config.(*inverter_exporter.ExporterConfigPrometheusExporter)
+			scheme := exporter.Scheme.(*inverter_exporter.PrometheusConfig)
+			if _, err := inverter_exporter.NewPrometheusExporter(config, exporterConfig, scheme, sensors); err != nil {
+				log.Fatal(err)
+			}
+		default:
+			log.Fatalf("unsupported type of exporter: %s", exporter.Type)
+		}
 	}
 }

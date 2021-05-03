@@ -24,7 +24,7 @@ const (
 	TAG                 Sensor = "tag"
 )
 
-func getSensorStructByTypeName(name Sensor) (interface{}, error) {
+func GetSensorStructByTypeName(name Sensor) (interface{}, error) {
 	switch name {
 	case ALARM_CONTROL_PANEL:
 		return &sensor2.AlarmControlPanel{}, nil

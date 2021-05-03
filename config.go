@@ -1,8 +1,6 @@
 package inverter_exporter
 
 import (
-	"bencurio/inverter_exporter/homeassistant"
-	"bencurio/inverter_exporter/prometheus"
 	"bencurio/inverter_exporter/tools/serial"
 	"fmt"
 	"github.com/go-playground/validator/v10"
@@ -20,8 +18,15 @@ type Config struct {
 }
 
 type Inverter struct {
+	Log           *Log           `yaml:"log"`
 	Communication *Communication `validate:"required" yaml:"communication"`
 	Exporters     []*Exporter    `validate:"required" yaml:"exporters"`
+}
+
+type Log struct {
+	Level log.Level `yaml:"level" default:"info"`
+	Out   string    `yaml:"out" default:"stdout"`
+	File  string    `yaml:"file,omitempty"`
 }
 
 type CommunicationType string
@@ -215,9 +220,9 @@ func (e *Exporter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	switch ExporterType(configData.Type) {
 	case ExporterTypeHomeAssistantMQTT:
-		tmpScheme = &homeassistant.Config{}
+		tmpScheme = &HomeAssistantConfig{}
 	case ExporterTypePrometheusExporter:
-		tmpScheme = &prometheus.Config{}
+		tmpScheme = &PrometheusConfig{}
 	default:
 		return fmt.Errorf("unsupported inverter exporter: %s", configData.Type)
 	}

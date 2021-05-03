@@ -10,10 +10,8 @@ func TestNewProtocol(t *testing.T) {
 		t.Errorf("No error occurred if an incorrect file path was specified.")
 	}
 
-	protocol, err := NewProtocol("protocol.yaml")
+	_, err = NewProtocol("protocol.example.yaml")
 	if err != nil {
 		t.Error(err)
 	}
-
-	t.Errorf("%v", protocol)
 }
