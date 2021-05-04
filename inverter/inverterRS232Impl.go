@@ -86,6 +86,8 @@ func (i inverterRS232Impl) readAllSensors() error {
 		data, err := i.serial.ReadWithTimeout(5)
 		if err != nil {
 			log.Errorf("serial.ReadWithTimeout: %v", err)
+			// Ignore crc mismatch
+			continue
 		}
 
 		if err := i.rawHandler(sensors.Command, data); err != nil {

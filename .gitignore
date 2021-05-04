@@ -33,3 +33,7 @@ fabric.properties
 *.dylib
 *.test
 *.out
+config.yaml
+homeassistant.yaml
+prometheus.yaml
+protocol.yaml

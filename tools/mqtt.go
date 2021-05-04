@@ -11,7 +11,7 @@ package tools
 //)
 //
 //func NewMQTT(config *models.Config) (mqtt.Client, error) {
-//	mqttBroker := fmt.Sprintf("%s://%s:%d", config.MQTT.Scheme, config.MQTT.Broker, config.MQTT.Port)
+//	mqttBroker := fmt.Sprintf("%s://%s:%d", config.MQTT.Schema, config.MQTT.Broker, config.MQTT.Port)
 //
 //	options := mqtt.NewClientOptions()
 //	options.AddBroker(mqttBroker)

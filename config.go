@@ -52,13 +52,13 @@ const (
 
 type Exporter struct {
 	Type       ExporterType `validate:"required" yaml:"type"`
-	SchemeFile string       `validate:"required" yaml:"scheme_file"`
-	Scheme     interface{}  `validate:"required" yaml:",inline"`
+	SchemaFile string       `validate:"required" yaml:"schema_file"`
+	Schema     interface{}  `validate:"required" yaml:",inline"`
 	Config     interface{}  `validate:"required" yaml:"config"`
 }
 
 type ExporterConfigHomeAssistantMQTT struct {
-	Scheme   string `validate:"required" yaml:"scheme" default:"tcp"`
+	Schema   string `validate:"required" yaml:"schema" default:"tcp"`
 	Broker   string `validate:"required" yaml:"broker"`
 	Port     int    `validate:"required" yaml:"port" default:"1883"`
 	ClientID string `validate:"required" yaml:"client_id" default:"inverter_exporter_ab4c"`
@@ -164,7 +164,7 @@ func (c *Communication) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 type tmpExporter struct {
 	Type       string                 `validate:"required" yaml:"type"`
-	SchemeFile string                 `validate:"required" yaml:"scheme_file"`
+	SchemaFile string                 `validate:"required" yaml:"schema_file"`
 	Config     map[string]interface{} `yaml:"config"`
 }
 
@@ -201,37 +201,37 @@ func (e *Exporter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	e.Type = ExporterType(configData.Type)
-	e.SchemeFile = configData.SchemeFile
+	e.SchemaFile = configData.SchemaFile
 	e.Config = realResult
 
 	// handle exporter config
-	stat, err := os.Stat(configData.SchemeFile)
+	stat, err := os.Stat(configData.SchemaFile)
 	if err != nil {
 		return err
 	}
 	if stat.IsDir() {
-		return fmt.Errorf("%s is a directory, not a file", configData.SchemeFile)
+		return fmt.Errorf("%s is a directory, not a file", configData.SchemaFile)
 	}
-	file, err := ioutil.ReadFile(configData.SchemeFile)
+	file, err := ioutil.ReadFile(configData.SchemaFile)
 	if err != nil {
 		return err
 	}
-	var tmpScheme interface{}
+	var tmpSchema interface{}
 
 	switch ExporterType(configData.Type) {
 	case ExporterTypeHomeAssistantMQTT:
-		tmpScheme = &HomeAssistantConfig{}
+		tmpSchema = &HomeAssistantConfig{}
 	case ExporterTypePrometheusExporter:
-		tmpScheme = &PrometheusConfig{}
+		tmpSchema = &PrometheusConfig{}
 	default:
 		return fmt.Errorf("unsupported inverter exporter: %s", configData.Type)
 	}
 
-	if err := yaml.Unmarshal(file, tmpScheme); err != nil {
+	if err := yaml.Unmarshal(file, tmpSchema); err != nil {
 		return err
 	}
 
-	e.Scheme = tmpScheme
+	e.Schema = tmpSchema
 
 	return nil
 }

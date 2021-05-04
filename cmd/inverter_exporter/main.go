@@ -13,7 +13,7 @@ import (
 func main() {
 	var configFile string
 
-	flag.StringVar(&configFile, "config", "./config.example.yaml", "Config file")
+	flag.StringVar(&configFile, "config", "/etc/inverter_exporter/config.yaml", "Config file")
 	flag.Parse()
 
 	config, err := inverter_exporter.NewConfig(configFile)
@@ -61,6 +61,10 @@ func initLog(config *inverter_exporter.Config) {
 
 		log.SetLevel(config.Inverter.Log.Level)
 
+		if config.Inverter.Log.Level == log.DebugLevel {
+			log.SetReportCaller(true)
+		}
+
 		switch config.Inverter.Log.Out {
 		case "stdout":
 			log.SetOutput(os.Stdout)
@@ -105,15 +109,15 @@ func initExporters(config *inverter_exporter.Config, sensors *memdb.MemDB) {
 		case inverter_exporter.ExporterTypeHomeAssistantMQTT:
 			log.Infof("  - Exporter: Home Assitant via MQTT init")
 			exporterConfig := exporter.Config.(*inverter_exporter.ExporterConfigHomeAssistantMQTT)
-			scheme := exporter.Scheme.(*inverter_exporter.HomeAssistantConfig)
-			if _, err := inverter_exporter.NewHomeAssistant(config, exporterConfig, scheme, sensors); err != nil {
+			schema := exporter.Schema.(*inverter_exporter.HomeAssistantConfig)
+			if _, err := inverter_exporter.NewHomeAssistant(config, exporterConfig, schema, sensors); err != nil {
 				log.Fatal(err)
 			}
 		case inverter_exporter.ExporterTypePrometheusExporter:
 			log.Infof("  - Exporter: Prometheus Exporter")
 			exporterConfig := exporter.Config.(*inverter_exporter.ExporterConfigPrometheusExporter)
-			scheme := exporter.Scheme.(*inverter_exporter.PrometheusConfig)
-			if _, err := inverter_exporter.NewPrometheusExporter(config, exporterConfig, scheme, sensors); err != nil {
+			schema := exporter.Schema.(*inverter_exporter.PrometheusConfig)
+			if _, err := inverter_exporter.NewPrometheusExporter(config, exporterConfig, schema, sensors); err != nil {
 				log.Fatal(err)
 			}
 		default:

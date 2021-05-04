@@ -234,7 +234,7 @@ homeassistant:
       PayloadOn: "1"
       PayloadOff: "0"
   - type: binary_sensor
-    key: StatusBatteryVoltageSteadyWhileCharging
+    key: StatusBatteryVoltageStdy
     config:
       UniqueID: "inverter_status_battery_voltage_stdy"
       Name: "Battery Voltage Steady While Charging"
@@ -569,7 +569,7 @@ homeassistant:
       PayloadOn: "1"
       PayloadOff: "0"
   - type: binary_sensor
-    key: BusLineFailA5
+    key: LineFailA5
     config:
       UniqueID: "inverter_warning_status_line_fail"
       DeviceClass: "problem"

@@ -26,16 +26,16 @@ inverter:
 
   exporters:
     - type: HOMEASSISTANT_MQTT
-      scheme_file: /etc/inverter_exporter/homeassistant.yaml
+      schema_file: /etc/inverter_exporter/homeassistant.yaml
       config:
-        scheme: tcp
+        schema: tcp
         broker: '127.0.0.1'
         port: 1883
         client_id: 'inverter_exporter_1'
         username: ''
         password: ''
     - type: PROMETHEUS_EXPORTER
-      scheme_file: /etc/inverter_exporter/prometheus.yaml
+      schema_file: /etc/inverter_exporter/prometheus.yaml
       config:
         host: 0.0.0.0
         port: 2112

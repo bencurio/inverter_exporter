@@ -46,7 +46,7 @@ const (
 
 type PrometheusExporter interface{}
 
-func NewPrometheusExporter(config *Config, exporterConfig *ExporterConfigPrometheusExporter, scheme *PrometheusConfig, sensors *memdb.MemDB) (PrometheusExporter, error) {
+func NewPrometheusExporter(config *Config, exporterConfig *ExporterConfigPrometheusExporter, schema *PrometheusConfig, sensors *memdb.MemDB) (PrometheusExporter, error) {
 
 	promMetrics := map[string]interface{}{}
 	promMetricsType := map[string]PrometheusMetricsType{}
@@ -54,7 +54,7 @@ func NewPrometheusExporter(config *Config, exporterConfig *ExporterConfigPrometh
 	pe := &prometheusexporter{
 		config:          config,
 		exporterConfig:  exporterConfig,
-		scheme:          scheme,
+		schema:          schema,
 		sensors:         *sensors,
 		promMetrics:     promMetrics,
 		promMetricsType: promMetricsType,
@@ -70,7 +70,7 @@ func NewPrometheusExporter(config *Config, exporterConfig *ExporterConfigPrometh
 type prometheusexporter struct {
 	config          *Config
 	exporterConfig  *ExporterConfigPrometheusExporter
-	scheme          *PrometheusConfig
+	schema          *PrometheusConfig
 	sensors         memdb.MemDB
 	promMetrics     map[string]interface{}
 	promMetricsType map[string]PrometheusMetricsType
@@ -98,7 +98,7 @@ func (p *prometheusexporter) metricsHandler() {
 }
 
 func (p *prometheusexporter) Run() error {
-	for _, metrics := range p.scheme.Prometheus {
+	for _, metrics := range p.schema.Prometheus {
 		switch PrometheusMetricsType(metrics.Type) {
 		case PROMETHEUS_METRICS_GAUGE:
 			p.promMetrics[metrics.Key] = newGauge(metrics.Config)

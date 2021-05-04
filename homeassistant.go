@@ -8,8 +8,11 @@ import (
 	"errors"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/gogf/gf/util/gconv"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"reflect"
+	"time"
 )
 
 type HomeAssistantConfig struct {
@@ -24,61 +27,135 @@ type HomeAssistantConfigSensor struct {
 
 type HomeAssistant interface {
 	ConfigureSensor(sensor HomeAssistantConfigSensor) error
-	UpdateSensor(sensor interface{}, value interface{}) error
-	SubscribeSensor(sensor interface{}) error
+	UpdateSensor(sensor HomeAssistantConfigSensor, value interface{}) error
+	SubscribeSensor(sensor HomeAssistantConfigSensor) error
+	Run() error
 }
 
 type AbstractHomeAssistant struct{}
 
-func NewHomeAssistant(config *Config, exporterConfig *ExporterConfigHomeAssistantMQTT, scheme *HomeAssistantConfig, sensors *memdb.MemDB) (HomeAssistant, error) {
-	return &homeassistant{
+func NewHomeAssistant(config *Config, exporterConfig *ExporterConfigHomeAssistantMQTT, schema *HomeAssistantConfig, sensors *memdb.MemDB) (HomeAssistant, error) {
+	hoas := &homeassistant{
 		config:         config,
 		exporterConfig: exporterConfig,
-		scheme:         scheme,
-		sensors:        sensors,
-	}, nil
+		schema:         schema,
+		sensors:        *sensors,
+	}
+
+	if err := hoas.Run(); err != nil {
+		return nil, err
+	}
+
+	return hoas, nil
 }
 
 type homeassistant struct {
 	mqttClient     mqtt.Client
 	config         *Config
 	exporterConfig *ExporterConfigHomeAssistantMQTT
-	scheme         *HomeAssistantConfig
-	sensors        *memdb.MemDB
+	schema         *HomeAssistantConfig
+	sensors        memdb.MemDB
 }
 
-func (h homeassistant) SubscribeSensor(sensor interface{}) error {
+func (h *homeassistant) Run() error {
+	if err := h.openMqttConnection(); err != nil {
+		return err
+	}
+	if err := h.setupSensors(); err != nil {
+		return err
+	}
+	if err := h.sensorHandler(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (h *homeassistant) openMqttConnection() error {
+	mqttOptions := mqtt.NewClientOptions()
+
+	mqttBroker := fmt.Sprintf("%s://%s:%d", h.exporterConfig.Schema, h.exporterConfig.Broker, h.exporterConfig.Port)
+	mqttOptions.AddBroker(mqttBroker)
+
+	if len(h.exporterConfig.ClientID) != 0 {
+		mqttOptions.SetClientID(h.exporterConfig.ClientID)
+	}
+	if len(h.exporterConfig.Username) != 0 {
+		mqttOptions.SetUsername(h.exporterConfig.Username)
+	}
+	if len(h.exporterConfig.Password) != 0 {
+		mqttOptions.SetPassword(h.exporterConfig.Password)
+	}
+
+	mqttOptions.OnConnect = func(client mqtt.Client) {
+		log.Infof("mqtt.OnConnect")
+	}
+	mqttOptions.OnConnectionLost = func(client mqtt.Client, err error) {
+		log.Warnf("mqtt.OnConnectionLost: %v", err)
+	}
+	mqttOptions.OnReconnecting = func(client mqtt.Client, options *mqtt.ClientOptions) {
+		log.Warnf("mqtt.OnReconnecting")
+	}
+	mqttOptions.SetDefaultPublishHandler(func(client mqtt.Client, message mqtt.Message) {
+		log.Warnf("mqtt.DefaultPublishHandler: %s", message)
+	})
+
+	mqttOptions.SetAutoReconnect(true)
+
+	h.mqttClient = mqtt.NewClient(mqttOptions)
+	if token := h.mqttClient.Connect(); token.Wait() && token.Error() != nil {
+		return fmt.Errorf("mqtt.Connect: %w", token.Error())
+	}
+
+	return nil
+}
+
+func (h *homeassistant) setupSensors() error {
+	for _, snsr := range h.schema.HomeAssistant {
+		if err := h.ConfigureSensor(snsr); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (h *homeassistant) sensorHandler() error {
+	go func() {
+		for range time.NewTicker(time.Second * 10).C {
+			for _, snsr := range h.schema.HomeAssistant {
+				v, err := h.sensors.Get(snsr.Key)
+				if err != nil {
+					log.Warnf("sensor not found: %v", err)
+				}
+				if err := h.UpdateSensor(snsr, v); err != nil {
+					log.Warnf("update error: %v", err)
+				}
+			}
+		}
+	}()
+	return nil
+}
+
+func (h *homeassistant) SubscribeSensor(sensor HomeAssistantConfigSensor) error {
 	// TODO Implement me
 	panic("implement me")
 }
 
-func (h homeassistant) ConfigureSensor(sensor HomeAssistantConfigSensor) error {
+func (h *homeassistant) ConfigureSensor(sensor HomeAssistantConfigSensor) error {
 	if !h.mqttClient.IsConnected() {
 		return errors.New("mqtt client isn't connected")
 	}
 
-	sensorRaw, err := json.Marshal(sensor.Config)
-	if err != nil {
-		return err
-	}
-
-	sensorStruct, err := ha.GetSensorStructByTypeName(sensor.Type)
-	if err != nil {
-		return err
-	}
-
-	if err := yaml.Unmarshal(sensorRaw, sensorStruct); err != nil {
-		return err
-	}
-
 	// Only used for the MQTT topic.
-	configTopic := reflect.ValueOf(sensorStruct).Elem().FieldByName("ConfigTopic").String()
-	reflect.ValueOf(sensorStruct).Elem().FieldByName("ConfigTopic").SetString("")
+	configTopic := reflect.ValueOf(sensor.Config).Elem().FieldByName("ConfigTopic").String()
+	reflect.ValueOf(sensor.Config).Elem().FieldByName("ConfigTopic").SetString("")
 
-	sensorPayload, err := json.Marshal(sensorStruct)
+	sensorPayload, err := json.Marshal(sensor.Config)
 	if err != nil {
 		return err
 	}
+
+	log.Debugf("Publish to %s", configTopic)
+	log.Debug(string(sensorPayload))
 
 	if token := h.mqttClient.Publish(configTopic, 0, false, sensorPayload); token.Wait() && token.Error() != nil {
 		return token.Error()
@@ -87,38 +164,16 @@ func (h homeassistant) ConfigureSensor(sensor HomeAssistantConfigSensor) error {
 	return nil
 }
 
-type tmpUpdateSensor struct {
-	Name       string `yaml:"name" json:"name"`
-	UniqueID   string `yaml:"UniqueID" json:"unique_id"`
-	StateTopic string `yaml:"StateTopic" json:"state_topic"`
-}
-
-func (h homeassistant) UpdateSensor(sensor interface{}, value interface{}) error {
+func (h *homeassistant) UpdateSensor(sensor HomeAssistantConfigSensor, value interface{}) error {
 	if !h.mqttClient.IsConnected() {
 		return errors.New("mqtt client isn't connected")
 	}
 
-	buffer, err := json.Marshal(sensor)
-	if err != nil {
-		return err
-	}
+	stateTopic := reflect.ValueOf(sensor.Config).Elem().FieldByName("StateTopic").String()
 
-	var tmpSensor tmpUpdateSensor
-	if err := json.Unmarshal(buffer, &tmpSensor); err != nil {
-		return err
-	}
+	log.Debugf("%s = %v", stateTopic, value)
 
-	var output string
-	switch reflect.ValueOf(sensor).Type().String() {
-	case "sensor.Sensor":
-		output = fmt.Sprintf("%v", value)
-	case "sensor.BinarySensor":
-		output = fmt.Sprintf("%v", value)
-	default:
-		return errors.New("unsupported sensor")
-	}
-
-	if token := h.mqttClient.Publish(tmpSensor.StateTopic, 0, false, output); token.Wait() && token.Error() != nil {
+	if token := h.mqttClient.Publish(stateTopic, 0, false, gconv.String(value)); token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
 

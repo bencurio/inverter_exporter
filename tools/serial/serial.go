@@ -82,7 +82,6 @@ func (s serial) ReadWithTimeout(timeout time.Duration) ([]byte, error) {
 	go func() {
 		var err error
 		buffer, err = s.Read()
-		log.Debugf("read = %v", buffer)
 		done <- err
 	}()
 
