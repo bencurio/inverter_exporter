@@ -42,6 +42,9 @@ func NewHomeAssistant(config *Config, exporterConfig *ExporterConfigHomeAssistan
 		sensors:        *sensors,
 	}
 
+	log.Infof(" - MQTT Client ID: %s", exporterConfig.ClientID)
+	log.Infof(" - MQTT Broker: %s://%s:%d", exporterConfig.Schema, exporterConfig.Broker, exporterConfig.Port)
+
 	if err := hoas.Run(); err != nil {
 		return nil, err
 	}
@@ -118,17 +121,27 @@ func (h *homeassistant) setupSensors() error {
 	return nil
 }
 
+func (h *homeassistant) sensorHandlerLoop() error {
+	for _, snsr := range h.schema.HomeAssistant {
+		v, err := h.sensors.Get(snsr.Key)
+		if err != nil {
+			log.Warnf("sensor not found: %v", err)
+		}
+		if err := h.UpdateSensor(snsr, v); err != nil {
+			log.Warnf("update error: %v", err)
+		}
+	}
+	return nil
+}
+
 func (h *homeassistant) sensorHandler() error {
 	go func() {
+		if err := h.sensorHandlerLoop(); err != nil {
+			return
+		}
 		for range time.NewTicker(time.Second * 10).C {
-			for _, snsr := range h.schema.HomeAssistant {
-				v, err := h.sensors.Get(snsr.Key)
-				if err != nil {
-					log.Warnf("sensor not found: %v", err)
-				}
-				if err := h.UpdateSensor(snsr, v); err != nil {
-					log.Warnf("update error: %v", err)
-				}
+			if err := h.sensorHandlerLoop(); err != nil {
+				return
 			}
 		}
 	}()

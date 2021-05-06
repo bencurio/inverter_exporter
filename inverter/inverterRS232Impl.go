@@ -42,8 +42,22 @@ func NewInverterRS232(config inverter_exporter.Config, memdb *memdb.MemDB) (Inve
 	serialConfig := config.Inverter.Communication.Config.(*serial.Config)
 	serialPort, _ := serial.NewSerial(*serialConfig)
 
+	log.Infof(" - Port name: %s", serialConfig.PortName)
+	log.Infof(" - Braud rate: %d", serialConfig.BraudRate)
+	log.Infof(" - Data bits: %d", serialConfig.DataBits)
+	log.Infof(" - Stop bits: %d", serialConfig.StopBits)
+	log.Infof(" - Parity mode: %d", serialConfig.ParityMode)
+
+	if len(serialConfig.CRC.Table) != 0 {
+		log.Infof(" - CRC check enabled")
+	} else {
+		log.Warnf(" - CRC check disabled")
+	}
+
 	if err := serialPort.Open(); err != nil {
-		return nil, err
+		// Just a warning level, because if you unplug the cable or the connection is unstable for a few moments
+		// (for some reason), don't exit the program.
+		log.Warn(err)
 	}
 
 	inv := &inverterRS232Impl{
@@ -59,31 +73,45 @@ func NewInverterRS232(config inverter_exporter.Config, memdb *memdb.MemDB) (Inve
 }
 
 func (i inverterRS232Impl) Run() error {
-	log.Info("InverterRS232 init")
-
 	go func() {
 		// FIXME Hard-coded query time!
+		if err := i.readLoop(); err != nil {
+			return
+		}
 		for range time.NewTicker(time.Second * 10).C {
-			if err := i.readAllSensors(); err != nil {
-				log.Warnf("InverterRS232Impl.readAllSensors: %v", err)
+			if err := i.readLoop(); err != nil {
+				return
 			}
 		}
 	}()
 	return nil
 }
 
-func (i inverterRS232Impl) readAllSensors() error {
+func (i inverterRS232Impl) readLoop() error {
+	if err := i.readAllSensors(i.serial); err != nil {
+		// Just a warning level, because if you unplug the cable or the connection is unstable for a few moments
+		// (for some reason), don't exit the program.
+		log.Warnf("InverterRS232Impl.readAllSensors: %v", err)
+		// Trying to restore
+		if err := i.serial.Open(); err != nil {
+			log.Warn(err)
+		}
+	}
+	return nil
+}
+
+func (i inverterRS232Impl) readAllSensors(rs serial.Serial) error {
 	for _, sensors := range i.config.Inverter.Communication.Protocol.Protocols {
 		if sensors.Type == inverter_exporter.PROTOCOL_TYPE_SET {
 			continue
 		}
 
-		if _, err := i.serial.Write([]byte(sensors.Command)); err != nil {
+		if _, err := rs.Write([]byte(sensors.Command)); err != nil {
 			log.Errorf("serial.Write: %v", err)
 			continue
 		}
 
-		data, err := i.serial.ReadWithTimeout(5)
+		data, err := rs.ReadWithTimeout(sensors.ResponseLength, 5)
 		if err != nil {
 			log.Errorf("serial.ReadWithTimeout: %v", err)
 			// Ignore crc mismatch
@@ -93,6 +121,9 @@ func (i inverterRS232Impl) readAllSensors() error {
 		if err := i.rawHandler(sensors.Command, data); err != nil {
 			log.Errorf("InverterRS232Impl.rawHandler: %v", err)
 		}
+
+		// We add a little extra time because without it you will get an incorrect answer.
+		time.Sleep(time.Second)
 	}
 	return nil
 }

@@ -10,12 +10,14 @@ import (
 	"time"
 )
 
+type MemDBStore map[string]interface{}
+
 type MemDB interface {
 	// Get a value from memory by key.
 	Get(key string) (interface{}, error)
 
 	// GetAll values from memory
-	GetAll() (map[string]interface{}, error)
+	GetAll() (MemDBStore, error)
 
 	// Set a value in memory based on the specified key
 	Set(key string, value interface{}) error
@@ -51,7 +53,7 @@ type MemDB interface {
 	Load(filename string) error
 }
 
-func NewMemDB(dataVariable *map[string]interface{}) (MemDB, error) {
+func NewMemDB(dataVariable *MemDBStore) (MemDB, error) {
 	ttlstore := map[string]int64{}
 
 	go func() {
@@ -73,12 +75,12 @@ func NewMemDB(dataVariable *map[string]interface{}) (MemDB, error) {
 }
 
 type memdb struct {
-	datastore map[string]interface{}
+	datastore MemDBStore
 	ttlstore  map[string]int64
 }
 
 type dump struct {
-	Datastore map[string]interface{}
+	Datastore MemDBStore
 	TTLstore  map[string]int64
 	Checksum  [64]byte
 }
@@ -91,7 +93,7 @@ func (m *memdb) Get(key string) (interface{}, error) {
 	return nil, fmt.Errorf("%s key is doesn't exsist", key)
 }
 
-func (m *memdb) GetAll() (map[string]interface{}, error) {
+func (m *memdb) GetAll() (MemDBStore, error) {
 	return m.datastore, nil
 }
 

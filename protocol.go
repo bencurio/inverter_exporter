@@ -37,7 +37,7 @@ type Protocols struct {
 type Protocol struct {
 	Command        string             `yaml:"command"`
 	Type           ProtocolType       `validate:"required" yaml:"type"`
-	ResponseLength uint               `yaml:"response_length"`
+	ResponseLength int                `yaml:"response_length"`
 	Mapping        []*ProtocolMapping `yaml:"mapping"`
 }
 

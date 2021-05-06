@@ -29,8 +29,8 @@ type CRC struct {
 type Serial interface {
 	Open() error
 	Close() error
-	Read() ([]byte, error)
-	ReadWithTimeout(timeout time.Duration) ([]byte, error)
+	Read(length int) ([]byte, error)
+	ReadWithTimeout(length int, timeout time.Duration) ([]byte, error)
 	Write(data []byte) (int, error)
 	CheckCRC(data []byte) error
 	AppendCRC(data []byte) ([]byte, error)
@@ -42,21 +42,23 @@ type serial struct {
 }
 
 // Read data from serial
-func (s serial) Read() ([]byte, error) {
-	eol := byte(0x0A) // <LF>
-	if s.config.CRC.EOLByte != 0 {
-		eol = s.config.CRC.EOLByte
-	}
-
+func (s serial) Read(length int) ([]byte, error) {
 	r := bufio.NewReader(s.port)
+	lvl := log.GetLevel()
 	var data []byte
+	sum := 0
 	for {
+		sum++
 		tkn, err := r.ReadByte()
 		if err != nil {
 			break
 		}
+		if lvl == log.DebugLevel {
+			log.Debug(string(tkn))
+			log.Debug(tkn)
+		}
 		data = append(data, tkn)
-		if tkn == eol {
+		if sum == length {
 			break
 		}
 	}
@@ -75,13 +77,13 @@ func (s serial) Read() ([]byte, error) {
 	return data, nil
 }
 
-func (s serial) ReadWithTimeout(timeout time.Duration) ([]byte, error) {
+func (s serial) ReadWithTimeout(length int, timeout time.Duration) ([]byte, error) {
 	var buffer []byte
 	done := make(chan error)
 
 	go func() {
 		var err error
-		buffer, err = s.Read()
+		buffer, err = s.Read(length)
 		done <- err
 	}()
 

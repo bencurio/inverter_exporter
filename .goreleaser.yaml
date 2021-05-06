@@ -46,16 +46,16 @@ nfpms:
       - /etc/inverter_exporter
     bindir: /usr/sbin
     contents:
-      - src: config.example.yaml
+      - src: config/config.example.yaml
         dst: /etc/inverter_exporter/config.example.yaml
         type: config
-      - src: homeassistant.example.yaml
+      - src: config/homeassistant.example.yaml
         dst: /etc/inverter_exporter/homeassistant.example.yaml
         type: config
-      - src: prometheus.example.yaml
+      - src: config/prometheus.example.yaml
         dst: /etc/inverter_exporter/prometheus.example.yaml
         type: config
-      - src: protocol.example.yaml
+      - src: config/protocol.example.yaml
         dst: /etc/inverter_exporter/protocol.example.yaml
         type: config
       - src: LICENSE.md

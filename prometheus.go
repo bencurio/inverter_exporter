@@ -47,7 +47,6 @@ const (
 type PrometheusExporter interface{}
 
 func NewPrometheusExporter(config *Config, exporterConfig *ExporterConfigPrometheusExporter, schema *PrometheusConfig, sensors *memdb.MemDB) (PrometheusExporter, error) {
-
 	promMetrics := map[string]interface{}{}
 	promMetricsType := map[string]PrometheusMetricsType{}
 
@@ -59,6 +58,10 @@ func NewPrometheusExporter(config *Config, exporterConfig *ExporterConfigPrometh
 		promMetrics:     promMetrics,
 		promMetricsType: promMetricsType,
 	}
+
+	log.Infof(" - Host: %s", exporterConfig.Host)
+	log.Infof(" - Port: %d", exporterConfig.Port)
+	log.Infof(" - Path: %s", exporterConfig.Path)
 
 	if err := pe.Run(); err != nil {
 		return nil, err
