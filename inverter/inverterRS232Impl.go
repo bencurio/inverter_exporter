@@ -2,10 +2,10 @@ package inverter
 
 import (
 	"bencurio/inverter_exporter"
-	"bencurio/inverter_exporter/memdb"
 	"bencurio/inverter_exporter/tools/serial"
 	"bufio"
 	"fmt"
+	"github.com/prologic/bitcask"
 	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
@@ -15,15 +15,7 @@ import (
 type inverterRS232Impl struct {
 	config inverter_exporter.Config
 	serial serial.Serial
-	memdb  memdb.MemDB
-}
-
-func (i inverterRS232Impl) ReadKeys() (map[string]interface{}, error) {
-	return i.memdb.GetAll()
-}
-
-func (i inverterRS232Impl) ReadKey(key string) (interface{}, error) {
-	return i.memdb.Get(key)
+	memdb  bitcask.Bitcask
 }
 
 //func (i inverterRS232Impl) RawRead() {
@@ -34,7 +26,7 @@ func (i inverterRS232Impl) ReadKey(key string) (interface{}, error) {
 //
 //}
 
-func NewInverterRS232(config inverter_exporter.Config, memdb *memdb.MemDB) (Inverter, error) {
+func NewInverterRS232(config inverter_exporter.Config, memdb *bitcask.Bitcask) (Inverter, error) {
 	if config.Inverter.Communication.Type != inverter_exporter.CommunicationTypeRS232 {
 		return nil, fmt.Errorf("invalid inverter communication type: %s", config.Inverter.Communication.Type)
 	}
@@ -111,6 +103,9 @@ func (i inverterRS232Impl) readAllSensors(rs serial.Serial) error {
 			continue
 		}
 
+		// Add extra time to respond
+		time.Sleep(time.Millisecond * 700)
+
 		data, err := rs.ReadWithTimeout(sensors.ResponseLength, 5)
 		if err != nil {
 			log.Errorf("serial.ReadWithTimeout: %v", err)
@@ -121,9 +116,6 @@ func (i inverterRS232Impl) readAllSensors(rs serial.Serial) error {
 		if err := i.rawHandler(sensors.Command, data); err != nil {
 			log.Errorf("InverterRS232Impl.rawHandler: %v", err)
 		}
-
-		// We add a little extra time because without it you will get an incorrect answer.
-		time.Sleep(time.Second)
 	}
 	return nil
 }
@@ -165,7 +157,7 @@ func (i inverterRS232Impl) rawHandler(command string, data []byte) error { // <(
 				v, _ = i.compileRegex(v, m.Regex)
 			}
 
-			if err := i.memdb.Set(m.Key, v); err != nil {
+			if err := i.memdb.Put([]byte(m.Key), []byte(v)); err != nil {
 				return fmt.Errorf("unable to write into the memdb: %w", err)
 			}
 		}

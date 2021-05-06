@@ -8,6 +8,8 @@ inverter:
   communication:
     type: RS232
     protocol_file: /etc/inverter_exporter/protocol.yaml
+    delay: 600
+    timeout: 5000
     config:
       port_name: "/dev/ttyUSB0"
       braud_rate: 2400

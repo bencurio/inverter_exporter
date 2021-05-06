@@ -1,9 +1,9 @@
 package inverter_exporter
 
 import (
-	"bencurio/inverter_exporter/memdb"
 	"fmt"
 	"github.com/gogf/gf/util/gconv"
+	"github.com/prologic/bitcask"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -46,7 +46,7 @@ const (
 
 type PrometheusExporter interface{}
 
-func NewPrometheusExporter(config *Config, exporterConfig *ExporterConfigPrometheusExporter, schema *PrometheusConfig, sensors *memdb.MemDB) (PrometheusExporter, error) {
+func NewPrometheusExporter(config *Config, exporterConfig *ExporterConfigPrometheusExporter, schema *PrometheusConfig, sensors *bitcask.Bitcask) (PrometheusExporter, error) {
 	promMetrics := map[string]interface{}{}
 	promMetricsType := map[string]PrometheusMetricsType{}
 
@@ -74,7 +74,7 @@ type prometheusexporter struct {
 	config          *Config
 	exporterConfig  *ExporterConfigPrometheusExporter
 	schema          *PrometheusConfig
-	sensors         memdb.MemDB
+	sensors         bitcask.Bitcask
 	promMetrics     map[string]interface{}
 	promMetricsType map[string]PrometheusMetricsType
 }
@@ -83,15 +83,15 @@ func (p *prometheusexporter) metricsHandler() {
 	go func() {
 		for range time.NewTicker(time.Second * 10).C {
 			for key, metrics := range p.promMetrics {
-				value, err := p.sensors.Get(key)
+				value, err := p.sensors.Get([]byte(key))
 				if err != nil {
 					log.Warnf("unable to get sensor value: %v", err)
 				}
 				switch p.promMetricsType[key] {
 				case PROMETHEUS_METRICS_GAUGE:
-					metrics.(prometheus.Gauge).Set(gconv.Float64(value))
+					metrics.(prometheus.Gauge).Set(gconv.Float64(string(value)))
 				case PROMETHEUS_METRICS_COUNTER:
-					metrics.(prometheus.Counter).Add(gconv.Float64(value))
+					metrics.(prometheus.Counter).Add(gconv.Float64(string(value)))
 				default:
 					log.Fatalf("unsupported metrics type: %s", p.promMetricsType[key])
 				}

@@ -3,14 +3,16 @@ package main
 import (
 	"bencurio/inverter_exporter"
 	"bencurio/inverter_exporter/inverter"
-	"bencurio/inverter_exporter/memdb"
 	"flag"
+	"github.com/prologic/bitcask"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 )
+
+var running = make(chan struct{})
 
 func main() {
 	var configFile string
@@ -23,19 +25,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	running := make(chan struct{})
-	sc := make(chan os.Signal)
+	sc := make(chan os.Signal, 1)
 
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT)
+	signal.Notify(sc, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT)
+
 	go func() {
 		<-sc
-		running <- struct{}{}
 		Quit()
+		close(running)
 	}()
 
 	Run(config, running)
-
-	<-running
 }
 
 func Run(config *inverter_exporter.Config, running chan struct{}) {
@@ -44,25 +44,34 @@ func Run(config *inverter_exporter.Config, running chan struct{}) {
 	log.Infof("Welcome to Inverter Exporter! Version: 0.0.0-dev")
 
 	log.Infof("Initialize MemDB for sensors")
-	sensorsMemDB := memdb.MemDBStore{}
-	sensors := initSensorsMemDB(sensorsMemDB)
+	//sensorsMemDB := memdb.MemDBStore{}
+	//sensors := initSensorsMemDB(&sensorsMemDB)
+	sensors, err := bitcask.Open("sensors.dat")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	log.Infof("Initialize Inverter Monitor service")
-	initInverterMonitor(config, &sensors)
+	initInverterMonitor(config, sensors)
 
 	log.Infof("Trying to communicate with the inverter ...")
-	time.Sleep(time.Second * 3)
 
-	s, _ := sensors.GetAll()
-	if len(s) == 0 {
+	queryCount := len(config.Inverter.Communication.Protocol.Protocols)
+	time.Sleep(time.Second * time.Duration(queryCount))
+
+	if sensors.Len() == 0 {
 		log.Fatal("No data was received from the inverter. Incorrect settings?")
 	}
 	log.Infof("Suceeded!")
 
 	log.Infof("Initialize Exporter service")
-	initExporters(config, &sensors)
+	initExporters(config, sensors)
 
 	log.Infof("Working ...")
+
+	<-running
+	defer sensors.Close()
 }
 
 func initLog(config *inverter_exporter.Config) {
@@ -75,7 +84,7 @@ func initLog(config *inverter_exporter.Config) {
 		log.Infof("Log level set to %s", config.Inverter.Log.Level)
 		log.SetLevel(config.Inverter.Log.Level)
 
-		if config.Inverter.Log.Level == log.DebugLevel {
+		if config.Inverter.Log.ReportCaller {
 			log.SetReportCaller(true)
 		}
 
@@ -102,15 +111,7 @@ func initLog(config *inverter_exporter.Config) {
 	}
 }
 
-func initSensorsMemDB(sensorsMemDB memdb.MemDBStore) memdb.MemDB {
-	sensors, err := memdb.NewMemDB(&sensorsMemDB)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return sensors
-}
-
-func initInverterMonitor(config *inverter_exporter.Config, sensors *memdb.MemDB) {
+func initInverterMonitor(config *inverter_exporter.Config, sensors *bitcask.Bitcask) {
 	switch config.Inverter.Communication.Type {
 	case inverter_exporter.CommunicationTypeRS232:
 		log.Infof("Inverter communication mode set to RS232")
@@ -121,7 +122,7 @@ func initInverterMonitor(config *inverter_exporter.Config, sensors *memdb.MemDB)
 	}
 }
 
-func initExporters(config *inverter_exporter.Config, sensors *memdb.MemDB) {
+func initExporters(config *inverter_exporter.Config, sensors *bitcask.Bitcask) {
 	for _, exporter := range config.Inverter.Exporters {
 		switch exporter.Type {
 		case inverter_exporter.ExporterTypeHomeAssistantMQTT:

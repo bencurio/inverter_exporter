@@ -3,12 +3,12 @@ package inverter_exporter
 import (
 	ha "bencurio/inverter_exporter/homeassistant"
 	"bencurio/inverter_exporter/homeassistant/sensor"
-	"bencurio/inverter_exporter/memdb"
 	"encoding/json"
 	"errors"
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gogf/gf/util/gconv"
+	"github.com/prologic/bitcask"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"reflect"
@@ -34,12 +34,12 @@ type HomeAssistant interface {
 
 type AbstractHomeAssistant struct{}
 
-func NewHomeAssistant(config *Config, exporterConfig *ExporterConfigHomeAssistantMQTT, schema *HomeAssistantConfig, sensors *memdb.MemDB) (HomeAssistant, error) {
+func NewHomeAssistant(config *Config, exporterConfig *ExporterConfigHomeAssistantMQTT, schema *HomeAssistantConfig, sensors *bitcask.Bitcask) (HomeAssistant, error) {
 	hoas := &homeassistant{
 		config:         config,
 		exporterConfig: exporterConfig,
 		schema:         schema,
-		sensors:        *sensors,
+		sensors:        sensors,
 	}
 
 	log.Infof(" - MQTT Client ID: %s", exporterConfig.ClientID)
@@ -57,7 +57,7 @@ type homeassistant struct {
 	config         *Config
 	exporterConfig *ExporterConfigHomeAssistantMQTT
 	schema         *HomeAssistantConfig
-	sensors        memdb.MemDB
+	sensors        *bitcask.Bitcask
 }
 
 func (h *homeassistant) Run() error {
@@ -123,7 +123,7 @@ func (h *homeassistant) setupSensors() error {
 
 func (h *homeassistant) sensorHandlerLoop() error {
 	for _, snsr := range h.schema.HomeAssistant {
-		v, err := h.sensors.Get(snsr.Key)
+		v, err := h.sensors.Get([]byte(snsr.Key))
 		if err != nil {
 			log.Warnf("sensor not found: %v", err)
 		}
@@ -184,7 +184,7 @@ func (h *homeassistant) UpdateSensor(sensor HomeAssistantConfigSensor, value int
 
 	stateTopic := reflect.ValueOf(sensor.Config).Elem().FieldByName("StateTopic").String()
 
-	log.Debugf("%s = %v", stateTopic, value)
+	log.Debugf("%s = %v", stateTopic, gconv.String(value))
 
 	if token := h.mqttClient.Publish(stateTopic, 0, false, gconv.String(value)); token.Wait() && token.Error() != nil {
 		return token.Error()

@@ -43,22 +43,33 @@ type serial struct {
 
 // Read data from serial
 func (s serial) Read(length int) ([]byte, error) {
+	firstByte := s.config.CRC.FirstByte
+	firstByteReceived := false
+	eol := s.config.CRC.EOLByte
+
 	r := bufio.NewReader(s.port)
 	lvl := log.GetLevel()
+
 	var data []byte
-	sum := 0
 	for {
-		sum++
 		tkn, err := r.ReadByte()
 		if err != nil {
 			break
+		}
+		if firstByteReceived {
+			if tkn == firstByte {
+				firstByteReceived = true
+			} else {
+				continue
+			}
 		}
 		if lvl == log.DebugLevel {
 			log.Debug(string(tkn))
 			log.Debug(tkn)
 		}
 		data = append(data, tkn)
-		if sum == length {
+		if tkn == eol {
+			log.Debugf("END (%d)", eol)
 			break
 		}
 	}

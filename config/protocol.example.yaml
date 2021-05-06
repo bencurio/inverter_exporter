@@ -17,7 +17,7 @@ protocols:
   # Device Mode Inquiry
   - command: QMOD
     type: get
-    response_length: 15
+    response_length: 5
     mapping:
       - key: PowerOnMode
         index: 0

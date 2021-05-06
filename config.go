@@ -24,9 +24,10 @@ type Inverter struct {
 }
 
 type Log struct {
-	Level log.Level `yaml:"level" default:"info"`
-	Out   string    `yaml:"out" default:"stdout"`
-	File  string    `yaml:"file,omitempty"`
+	Level        log.Level `yaml:"level" default:"info"`
+	Out          string    `yaml:"out" default:"stdout"`
+	File         string    `yaml:"file,omitempty"`
+	ReportCaller bool      `yaml:"report_caller"`
 }
 
 type CommunicationType string

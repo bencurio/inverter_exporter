@@ -133,7 +133,7 @@ prometheus:
       name: "inverter_status_load"
       help: "Load (UOM: Boolean)"
   - type: Gauge
-    key: StatusBatteryVoltageSteadyWhileCharging
+    key: StatusBatteryVoltageStdy
     config:
       name: "inverter_status_battery_voltage_stdy"
       help: "Battery Voltage Steady While Charging (UOM: Boolean)"
@@ -302,7 +302,7 @@ prometheus:
       name: "inverter_warning_status_bus_soft_fail"
       help: "Bus Soft Fail (Fault) (Type: Boolean)"
   - type: Gauge
-    key: BusLineFailA5
+    key: LineFailA5
     config:
       name: "inverter_warning_status_line_fail"
       help: "LINE FAIL (Warning) (Type: Boolean)"

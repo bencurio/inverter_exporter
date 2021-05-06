@@ -89,7 +89,7 @@ func NewProtocol(protocolFile string) (*Protocols, error) {
 		return nil, err
 	}
 
-	//// Check the "key" is unique
+	// Check the "key" is unique
 	var tmpKeys []string
 	for _, protocol := range protocols.Protocols {
 		for _, m := range protocol.Mapping {
@@ -102,8 +102,8 @@ func NewProtocol(protocolFile string) (*Protocols, error) {
 		}
 	}
 
-	//// Validate struct
-	//// TODO Looking for better validation
+	// Validate struct
+	// TODO Looking for better validation
 	for _, protocol := range protocols.Protocols {
 		if len(protocol.Type) == 0 {
 			return nil, fmt.Errorf("the type is required (%v)", protocol)

@@ -5,12 +5,12 @@ import (
 )
 
 func TestNewProtocol(t *testing.T) {
-	_, err := NewProtocol("protocol_bad.yaml")
+	_, err := NewProtocol("./config/protocol_bad.yaml")
 	if err == nil {
 		t.Errorf("No error occurred if an incorrect file path was specified.")
 	}
 
-	_, err = NewProtocol("protocol.example.yaml")
+	_, err = NewProtocol("./config/protocol.example.yaml")
 	if err != nil {
 		t.Error(err)
 	}
