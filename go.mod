@@ -3,10 +3,9 @@ module bencurio/inverter_exporter
 go 1.16
 
 require (
-	github.com/akrylysov/pogreb v0.10.1
 	github.com/eclipse/paho.mqtt.golang v1.3.4
 	github.com/go-playground/validator/v10 v10.5.0
-	github.com/gogf/gf v1.15.7
+	github.com/gogf/gf v1.16.1
 	github.com/jacobsa/go-serial v0.0.0-20180131005756-15cf729a72d4
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/prologic/bitcask v0.3.10
