@@ -57,8 +57,9 @@ func Run(config *inverter_exporter.Config, running chan struct{}) {
 
 	log.Infof("Trying to communicate with the inverter ...")
 
-	queryCount := len(config.Inverter.Communication.Protocol.Protocols)
-	time.Sleep(time.Second * time.Duration(queryCount))
+	//queryCount := len(config.Inverter.Communication.Protocol.Protocols)
+	//time.Sleep(time.Second * time.Duration(queryCount))
+	time.Sleep(time.Second * 30)
 
 	if sensors.Len() == 0 {
 		log.Fatal("No data was received from the inverter. Incorrect settings?")

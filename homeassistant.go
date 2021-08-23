@@ -2,7 +2,9 @@ package inverter_exporter
 
 import (
 	ha "bencurio/inverter_exporter/homeassistant"
+	"bencurio/inverter_exporter/homeassistant/common"
 	"bencurio/inverter_exporter/homeassistant/sensor"
+	sens "bencurio/inverter_exporter/homeassistant/sensor"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -158,9 +160,33 @@ func (h *homeassistant) ConfigureSensor(sensor HomeAssistantConfigSensor) error 
 		return errors.New("mqtt client isn't connected")
 	}
 
+	device := &common.Device{}
+
+	serialNumber, err := h.sensors.Get([]byte("SerialNumber"))
+	if err == nil {
+		device.Identifiers = gconv.String(serialNumber)
+	}
+
+	firmwareVersion, err := h.sensors.Get([]byte("FirmwareVersion"))
+	if err == nil {
+		device.SwVersion = gconv.String(firmwareVersion)
+	}
+
+	switch sensor.Type {
+	case ha.BINARY_SENSOR:
+		sensor.Config.(*sens.BinarySensor).Device = device
+	case ha.SENSOR:
+		sensor.Config.(*sens.Sensor).Device = device
+	case ha.SWITCH:
+		sensor.Config.(*sens.Switch).Device = device
+	}
+
 	// Only used for the MQTT topic.
-	configTopic := reflect.ValueOf(sensor.Config).Elem().FieldByName("ConfigTopic").String()
-	reflect.ValueOf(sensor.Config).Elem().FieldByName("ConfigTopic").SetString("")
+	config := reflect.ValueOf(sensor.Config).Elem()
+	configTopic := config.FieldByName("ConfigTopic").String()
+	if config.FieldByName("ConfigTopic").CanSet() {
+		config.FieldByName("ConfigTopic").SetString("")
+	}
 
 	sensorPayload, err := json.Marshal(sensor.Config)
 	if err != nil {
