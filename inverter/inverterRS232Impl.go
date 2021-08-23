@@ -5,7 +5,7 @@ import (
 	"bencurio/inverter_exporter/tools/serial"
 	"bufio"
 	"fmt"
-	"github.com/prologic/bitcask"
+	"git.mills.io/prologic/bitcask"
 	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
@@ -99,6 +99,8 @@ func (i inverterRS232Impl) readAllSensors(rs serial.Serial) error {
 		}
 
 		if _, err := rs.Write([]byte(sensors.Command)); err != nil {
+			_ = rs.Close()
+			_ = rs.Open()
 			log.Errorf("serial.Write: %v", err)
 			continue
 		}

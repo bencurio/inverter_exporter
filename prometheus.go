@@ -2,8 +2,8 @@ package inverter_exporter
 
 import (
 	"fmt"
+	"git.mills.io/prologic/bitcask"
 	"github.com/gogf/gf/util/gconv"
-	"github.com/prologic/bitcask"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

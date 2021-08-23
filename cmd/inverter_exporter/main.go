@@ -4,7 +4,7 @@ import (
 	"bencurio/inverter_exporter"
 	"bencurio/inverter_exporter/inverter"
 	"flag"
-	"github.com/prologic/bitcask"
+	"git.mills.io/prologic/bitcask"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/signal"

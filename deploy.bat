@@ -7,10 +7,10 @@ set GOARCH=arm
 
 go build .
 
-scp .\inverter_exporter root@10.11.10.194:/root/addons/inverter_exporter
+REM scp .\inverter_exporter root@10.11.10.194:/root/addons/inverter_exporter
 
-ssh root@10.11.10.194 "chmod +x /root/addons/inverter_exporter/inverter_exporter"
+REM ssh root@10.11.10.194 "chmod +x /root/addons/inverter_exporter/inverter_exporter"
 
-del inverter_exporter
+REM del inverter_exporter
 
 cd ..\..\
