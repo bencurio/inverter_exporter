@@ -7,9 +7,10 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.3.5
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/gofrs/flock v0.8.1 // indirect
-	github.com/gogf/gf v1.16.5
+	github.com/gogf/gf v1.16.7
+	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/jacobsa/go-serial v0.0.0-20180131005756-15cf729a72d4
-	github.com/prologic/bitcask v0.3.10
+	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/common v0.30.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
